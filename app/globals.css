@@ -138,3 +138,15 @@ body {
     @apply font-sans;
   }
 }
+
+@utility bg-brand-gradient {
+  background: linear-gradient(to right, #F9C339, #B99525);
+}
+
+@utility text-brand-gradient {
+  background: linear-gradient(to right, #F9C339, #B99525);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
