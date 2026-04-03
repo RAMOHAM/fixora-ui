@@ -3,26 +3,6 @@ import Link from "next/link";
 const Footer = () => {
   return (
     <footer className="w-full flex flex-col items-center">
-      {/* CTA Box */}
-      <div className="w-full max-w-5xl mx-auto px-6 py-16 md:py-24">
-        <div className="bg-secondary rounded-[2rem] p-10 md:p-16 flex flex-col items-center text-center space-y-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-            Ready to Elevate Your Living Space?
-          </h2>
-          <p className="text-white opacity-80 max-w-lg text-sm md:text-base">
-            Join thousands of Dublin homeowners who trust FIXORA™ for uncompromised maintenance quality.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button className="bg-primary text-secondary font-semibold px-8 py-3 rounded-md hover:opacity-90 transition-opacity">
-              Book Your Service Now
-            </button>
-            <button className="bg-white/10 text-white font-semibold px-8 py-3 rounded-md hover:bg-white/20 transition-all border border-white/10">
-              Contact Our Concierge
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Footer Bottom Area */}
       <div className="w-full bg-secondary py-12 px-6 lg:px-12 mt-12 md:mt-20">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center lg:items-end gap-10">
