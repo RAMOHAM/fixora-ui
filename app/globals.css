@@ -7,12 +7,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+    
 
   /* Brand Colors */
   --color-primary: #F9C339;
+  --color-primarydark: #B99525;
   --color-secondary: #1A1E1D;
   --color-tertiary: #0D7A5F;
   --color-neutral: #1A1E1D;
+  --color-section-bg: #cdcdcd;
 
   /* Fonts */
   --font-heading: var(--font-sans);
@@ -91,6 +94,7 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --section-bg: oklch(1 0 89.876);
 }
 
 .dark {
@@ -125,6 +129,7 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --section-bg: oklch(0.18 0 0);
 }
 
 @layer base {

@@ -1,5 +1,6 @@
 import HomePageNavbar from "@/app/home/HomePageNavbar";
 import Hero from "@/app/home/Hero";
+import ServicesListSection from "@/app/home/ServicesListSection";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
       <HomePageNavbar />
       <main className="flex-1 w-full flex flex-col items-center justify-start overflow-hidden">
         <Hero />
+        <ServicesListSection />
       </main>
     </div>
   );
