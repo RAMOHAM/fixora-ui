@@ -31,9 +31,11 @@ export default function HomePageNavbar() {
       </nav>
 
       <div className="flex items-center w-full md:w-auto justify-center md:justify-end mt-2 md:mt-0">
-        <Button className="bg-brand-gradient hover:opacity-90 text-white h-[46px] px-8 rounded-xl text-[16px] font-bold shadow-md transition-opacity w-full md:w-auto">
-          Book Now
-        </Button>
+          <Link href="/book">
+              <Button className="bg-brand-gradient hover:opacity-90 text-white h-[46px] px-8 rounded-xl text-[16px] font-bold shadow-md transition-opacity w-full md:w-auto">
+                  Book Now
+              </Button>
+          </Link>
       </div>
     </header>
   );
