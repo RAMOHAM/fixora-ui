@@ -2,13 +2,9 @@
 
 import { MapPin, Calendar, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MultiStepFormProps } from "@/app/book/page";
 
-interface AddressDetailsFormProps {
-  onNext?: () => void;
-  onBack?: () => void;
-}
-
-const AddressDetailsForm = ({ onNext, onBack }: AddressDetailsFormProps) => {
+const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900">

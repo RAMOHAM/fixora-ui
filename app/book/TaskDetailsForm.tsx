@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Brush, PaintRoller, Wrench, Plug, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { MultiStepFormProps } from "@/app/book/page";
 
 const categories = [
   { id: "cleaning", label: "Cleaning", icon: Brush },
@@ -12,11 +13,7 @@ const categories = [
   { id: "electrical", label: "Electrical", icon: Plug },
 ];
 
-interface TaskDetailsFormProps {
-  onNext?: () => void;
-}
-
-const TaskDetailsForm = ({ onNext }: TaskDetailsFormProps) => {
+const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("cleaning");
 
   return (

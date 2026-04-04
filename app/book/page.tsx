@@ -5,8 +5,13 @@ import TaskDetailsForm from "./TaskDetailsForm";
 import AddressDetailsForm from "./AddressDetailsForm";
 import ContactsDetailsForm from "./ContactsDetailsForm";
 
+export type MultiStepFormProps = {
+    onNext?: () => void;
+    onBack?: () => void;
+};
+
 const BookingFormPage = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
 
   const handleNext = () => setStep((s) => Math.min(3, s + 1));
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));

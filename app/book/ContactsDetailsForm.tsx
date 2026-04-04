@@ -2,13 +2,9 @@
 
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MultiStepFormProps } from "@/app/book/page";
 
-interface ContactsDetailsFormProps {
-  onBack?: () => void;
-  onSubmit?: () => void;
-}
-
-const ContactsDetailsForm = ({ onBack, onSubmit }: ContactsDetailsFormProps) => {
+const ContactsDetailsForm = ({ onBack }: MultiStepFormProps) => {
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-4xl font-bold tracking-tight text-neutral-900">
@@ -63,7 +59,7 @@ const ContactsDetailsForm = ({ onBack, onSubmit }: ContactsDetailsFormProps) => 
           Back
         </Button>
         <Button 
-          onClick={onSubmit}
+          onClick={onBack}
           className="px-8 py-6 w-full md:w-auto text-lg rounded-xl bg-brand-gradient text-white hover:opacity-90 transition-opacity font-bold shadow-md"
         >
           Complete Booking
