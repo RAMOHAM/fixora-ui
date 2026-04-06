@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const taskFields = {
     jobDescription: z.string().min(1, { message: "Job description is required" }),
-    videoInput: z.string().optional(),
+    videoInput: z.any().optional(),
 };
 
 export const addressFields = {
