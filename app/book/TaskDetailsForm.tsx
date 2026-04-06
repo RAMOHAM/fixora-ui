@@ -5,6 +5,8 @@ import { Brush, PaintRoller, Wrench, Plug, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
+import {useFormContext} from "react-hook-form";
+import { BookingFormData } from "@/app/book/schema/formSchema";
 
 const categories = [
   { id: "cleaning", label: "Cleaning", icon: Brush },
@@ -15,6 +17,7 @@ const categories = [
 
 const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("cleaning");
+  const { register, formState: { errors } } = useFormContext<BookingFormData>();
 
   return (
     <div className="space-y-10">
@@ -33,6 +36,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
             const isSelected = selectedCategory === category.id;
             return (
               <button
+                type="button"
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 className={cn(
@@ -58,7 +62,9 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
         <textarea
           className="w-full min-h-[160px] p-6 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-400 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all resize-y text-base"
           placeholder="e.g. Deep cleaning of a 3-bedroom Victorian home in Rathmines, focusing on windows and original floorboards..."
+          {...register("jobDescription")}
         />
+          {errors.jobDescription && <span>{errors.jobDescription.message}</span>}
       </div>
 
       {/* Upload Video Section */}
@@ -79,7 +85,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
           <p className="text-gray-700 font-medium mb-6">
             Drag and drop your video here, or click to browse
           </p>
-          <Button className="px-6 py-3 bg-[#e8e9e4] text-[#847B62] font-bold rounded-lg hover:bg-[#dfdcd5] transition-colors">
+          <Button type="button" className="px-6 py-3 bg-[#e8e9e4] text-[#847B62] font-bold rounded-lg hover:bg-[#dfdcd5] transition-colors">
             Add Video
           </Button>
         </div>
@@ -88,6 +94,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
       {/* Navigation Buttons */}
       <div className="pt-6 flex justify-end">
         <Button 
+          type="button"
           onClick={onNext}
           className="px-8 py-6 w-full md:w-auto text-lg rounded-xl bg-brand-gradient text-white hover:opacity-90 transition-opacity font-bold shadow-md"
         >
