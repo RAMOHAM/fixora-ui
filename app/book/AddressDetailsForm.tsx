@@ -15,6 +15,7 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
   } = useFormContext<BookingFormData>();
 
   const dateInputRef = useRef<HTMLInputElement | null>(null);
+  const { ref: dateOfJobRef, ...dateOfJobRegister } = register("dateOfJob");
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -61,8 +62,9 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
                 "w-full pl-4 pr-12 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-800 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base",
                 errors.dateOfJob && "border-red-500 focus:border-red-500 focus:ring-red-500"
               )}
-              {...register("dateOfJob")}
+              {...dateOfJobRegister}
               ref={(el) => {
+                dateOfJobRef(el);
                 dateInputRef.current = el;
               }}
             />

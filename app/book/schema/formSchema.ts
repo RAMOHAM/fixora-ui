@@ -3,7 +3,6 @@ import { z } from "zod";
 const isoDateString = z
     .string()
     .min(1, { message: "Date of job is required" })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Use a valid date" });
 
 export const taskFields = {
     category: z.string().min(1),

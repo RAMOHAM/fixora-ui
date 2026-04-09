@@ -29,6 +29,15 @@ const BookingFormPage = () => {
     const bookingForm = useForm<BookingFormData>({
         resolver: zodResolver(BookingFormSchema),
         mode: "onTouched",
+        defaultValues: {
+            category: "cleaning",
+            preferredWindow: "morning",
+            address: "",
+            dateOfJob: "",
+            email: "",
+            phone: "",
+            jobDescription: "",
+        },
     })
 
     const handleNext = async () => {
@@ -40,9 +49,14 @@ const BookingFormPage = () => {
     }
     const handlePrev = () => setStep((step) => Math.max(1, step - 1));
 
-    const onSubmit = (data: BookingFormData) => {
-        // TODO: replace with your booking API call
-        console.log("Booking form submitted", data);
+    const onSubmit = async (bookingFormData: BookingFormData) => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/booking`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bookingFormData),
+        });
+        const bookingAPIResponse = await res.json();
+        console.log("Booking form submitted", bookingAPIResponse);
     };
 
     return (
