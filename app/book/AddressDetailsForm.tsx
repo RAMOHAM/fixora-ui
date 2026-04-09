@@ -5,9 +5,16 @@ import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
+import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
-  const { register, formState: { errors } } = useFormContext<BookingFormData>();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<BookingFormData>();
+
+  const dateInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -26,12 +33,19 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
           </div>
           <input
             type="text"
-            className="w-full pl-12 pr-4 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base"
+            className={cn(
+              "w-full pl-12 pr-4 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base",
+              errors.address && "border-red-500 focus:border-red-500 focus:ring-red-500"
+            )}
             placeholder="15 Merrion Square, Dublin 2..."
             {...register("address")}
           />
         </div>
-        {errors.address && <span className="text-red-500 text-sm mt-1 inline-block">{errors.address.message}</span>}
+        {errors.address && (
+          <span className="text-red-500 text-sm font-medium mt-1 inline-block">
+            {errors.address.message}
+          </span>
+        )}
       </div>
 
       {/* Date & Time Window Section */}
@@ -42,16 +56,36 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
           </label>
           <div className="relative">
             <input
-              type="text"
-              className="w-full pl-4 pr-12 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-800 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base cursor-pointer"
-              placeholder="mm/dd/yyyy"
+              type="date"
+              className={cn(
+                "w-full pl-4 pr-12 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-800 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base",
+                errors.dateOfJob && "border-red-500 focus:border-red-500 focus:ring-red-500"
+              )}
               {...register("dateOfJob")}
+              ref={(el) => {
+                dateInputRef.current = el;
+              }}
             />
-            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+            <button
+              type="button"
+              aria-label="Open date picker"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center"
+              onClick={() => {
+                const el = dateInputRef.current;
+                if (!el) return;
+                // Prefer opening the native picker when supported.
+                (el as unknown as { showPicker?: () => void }).showPicker?.();
+                el.focus();
+              }}
+            >
               <Calendar className="text-gray-800 stroke-[2]" size={20} />
-            </div>
+            </button>
           </div>
-          {errors.dateOfJob && <span className="text-red-500 text-sm mt-1 inline-block">{errors.dateOfJob.message}</span>}
+          {errors.dateOfJob && (
+            <span className="text-red-500 text-sm font-medium mt-1 inline-block">
+              {errors.dateOfJob.message}
+            </span>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -72,13 +106,12 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
               <ChevronDown className="text-gray-500 stroke-[2]" size={20} />
             </div>
           </div>
-          {errors.preferredWindow && <span className="text-red-500 text-sm mt-1 inline-block">{errors.preferredWindow.message}</span>}
         </div>
       </div>
 
       {/* Navigation Buttons */}
       <div className="pt-6 flex flex-col md:flex-row justify-end space-y-3 md:space-y-0 md:space-x-4">
-        <Button 
+        <Button
           type="button"
           onClick={onBack}
           variant="outline"
@@ -86,7 +119,7 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
         >
           Back
         </Button>
-        <Button 
+        <Button
           type="button"
           onClick={onNext}
           className="px-8 py-6 w-full md:w-auto text-lg rounded-xl bg-brand-gradient text-white hover:opacity-90 transition-opacity font-bold shadow-md"

@@ -5,9 +5,13 @@ import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
+import { cn } from "@/lib/utils";
 
 const ContactsDetailsForm = ({ onBack }: MultiStepFormProps) => {
-  const { register, formState: { errors } } = useFormContext<BookingFormData>();
+  const {
+    register,
+    formState: { errors, isSubmitting },
+  } = useFormContext<BookingFormData>();
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -23,11 +27,18 @@ const ContactsDetailsForm = ({ onBack }: MultiStepFormProps) => {
           </label>
           <input
             type="email"
-            className="w-full px-5 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base"
+            className={cn(
+              "w-full px-5 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base",
+              errors.email && "border-red-500 focus:border-red-500 focus:ring-red-500"
+            )}
             placeholder="name@domain.com"
             {...register("email")}
           />
-          {errors.email && <span className="text-red-500 text-sm mt-1 inline-block">{errors.email.message}</span>}
+          {errors.email && (
+            <span className="text-red-500 text-sm font-medium mt-1 inline-block">
+              {errors.email.message}
+            </span>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -36,11 +47,18 @@ const ContactsDetailsForm = ({ onBack }: MultiStepFormProps) => {
           </label>
           <input
             type="tel"
-            className="w-full px-5 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base"
+            className={cn(
+              "w-full px-5 py-4 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-[#847B62]/70 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all text-base",
+              errors.phone && "border-red-500 focus:border-red-500 focus:ring-red-500"
+            )}
             placeholder="+353 00 000 0000"
             {...register("phone")}
           />
-          {errors.phone && <span className="text-red-500 text-sm mt-1 inline-block">{errors.phone.message}</span>}
+          {errors.phone && (
+            <span className="text-red-500 text-sm font-medium mt-1 inline-block">
+              {errors.phone.message}
+            </span>
+          )}
         </div>
       </div>
 
@@ -68,8 +86,9 @@ const ContactsDetailsForm = ({ onBack }: MultiStepFormProps) => {
           Back
         </Button>
         <Button
-            type="submit"
-            className="px-8 py-6 w-full md:w-auto text-lg rounded-xl bg-brand-gradient text-white hover:opacity-90 transition-opacity font-bold shadow-md"
+          type="submit"
+          disabled={isSubmitting}
+          className="px-8 py-6 w-full md:w-auto text-lg rounded-xl bg-brand-gradient text-white hover:opacity-90 transition-opacity font-bold shadow-md"
         >
           Complete Booking
         </Button>

@@ -34,28 +34,36 @@ const BookingFormPage = () => {
     const handleNext = async () => {
         const fields = Object.keys(STEP_SCHEMAS[step - 1].shape) as (keyof BookingFormData)[]
         const valid = await bookingForm.trigger(fields)
-        if (valid){
+        if (valid) {
             setStep((step) => Math.min(totalSteps, step + 1));
         }
     }
     const handlePrev = () => setStep((step) => Math.max(1, step - 1));
 
+    const onSubmit = (data: BookingFormData) => {
+        // TODO: replace with your booking API call
+        console.log("Booking form submitted", data);
+    };
+
     return (
-      <FormProvider {...bookingForm}>
-          <form className="min-h-screen bg-slate-50/30 pb-20">
-              <div className="max-w-4xl mx-auto pt-16 px-4">
-                  {/* Stepper */}
-                  <FormStepper step={step} />
-                  {/* Main Content Area */}
-                  <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 md:p-12">
-                      {step === 1 && <TaskDetailsForm onNext={handleNext} />}
-                      {step === 2 && <AddressDetailsForm onNext={handleNext} onBack={handlePrev} />}
-                      {step === 3 && <ContactsDetailsForm onBack={handlePrev} />}
-                  </div>
-              </div>
-          </form>
-      </FormProvider>
-  );
+        <FormProvider {...bookingForm}>
+            <form
+                className="min-h-screen bg-slate-50/30 pb-20"
+                onSubmit={bookingForm.handleSubmit(onSubmit)}
+            >
+                <div className="max-w-4xl mx-auto pt-16 px-4">
+                    {/* Stepper */}
+                    <FormStepper step={step} />
+                    {/* Main Content Area */}
+                    <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 md:p-12">
+                        {step === 1 && <TaskDetailsForm onNext={handleNext} />}
+                        {step === 2 && <AddressDetailsForm onNext={handleNext} onBack={handlePrev} />}
+                        {step === 3 && <ContactsDetailsForm onBack={handlePrev} />}
+                    </div>
+                </div>
+            </form>
+        </FormProvider>
+    );
 };
 
 export default BookingFormPage;

@@ -1,23 +1,30 @@
 "use client";
 
+import { useEffect } from "react";
 import { Brush, PaintRoller, Wrench, Plug, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
-import { useState } from "react";
 
 const categories = [
-  { id: "cleaning", label: "Cleaning", icon: Brush },
-  { id: "painting", label: "Painting", icon: PaintRoller },
-  { id: "plumbing", label: "Plumbing", icon: Wrench },
-  { id: "electrical", label: "Electrical", icon: Plug },
+    { id: "cleaning", label: "Cleaning", icon: Brush },
+    { id: "painting", label: "Painting", icon: PaintRoller },
+    { id: "plumbing", label: "Plumbing", icon: Wrench },
+    { id: "electrical", label: "Electrical", icon: Plug },
 ];
 
 const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
-    const [selectedCategory, setSelectedCategory] = useState<string>("cleaning");
-    const { register, formState: { errors } } = useFormContext<BookingFormData>();
+    const { register, watch, setValue, formState: { errors } } = useFormContext<BookingFormData>();
+    const selectedCategory = watch("category");
+
+    useEffect(() => {
+        if (!selectedCategory) {
+            setValue("category", "cleaning");
+        }
+    }, [selectedCategory, setValue]);
+
     return (
         <div className="space-y-10">
             <h1 className="text-4xl font-bold tracking-tight text-neutral-900">
@@ -37,7 +44,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
                             <button
                                 type="button"
                                 key={category.id}
-                                onClick={() => setSelectedCategory(category.id)}
+                                onClick={() => setValue("category", category.id)}
                                 className={cn(
                                     "flex flex-col items-center justify-center p-6 border rounded-xl transition-all duration-200",
                                     isSelected
@@ -59,11 +66,11 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
                     DETAILED DESCRIPTION OF THE JOB
                 </label>
                 <textarea
-                    className="w-full min-h-[160px] p-6 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-400 border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all resize-y text-base"
+                    className={cn("w-full min-h-[160px] p-6 rounded-xl bg-[#EBEBEB] text-gray-800 placeholder:text-gray-400 border border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white outline-none transition-all resize-y text-base", errors.jobDescription && "border-red-500 focus:border-red-500 focus:ring-red-500")}
                     placeholder="e.g. Deep cleaning of a 3-bedroom Victorian home in Rathmines, focusing on windows and original floorboards..."
                     {...register("jobDescription")}
                 />
-                {errors.jobDescription && <span className="text-red-500 text-sm mt-1 inline-block">{errors.jobDescription.message}</span>}
+                {errors.jobDescription && <span className="text-red-500 text-sm font-medium mt-1 inline-block">{errors.jobDescription.message}</span>}
             </div>
 
             {/* Upload Video Section */}
@@ -101,7 +108,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
                 </Button>
             </div>
         </div>
-    )
+    );
 };
 
 export default TaskDetailsForm;
