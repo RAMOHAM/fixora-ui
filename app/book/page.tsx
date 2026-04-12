@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import TaskDetailsForm from "./TaskDetailsForm";
 import AddressDetailsForm from "./AddressDetailsForm";
 import ContactsDetailsForm from "./ContactsDetailsForm";
@@ -23,6 +25,7 @@ export type MultiStepFormProps = {
 const STEP_SCHEMAS = [taskFormSchema, addressFormSchema, contactFormSchema]
 
 const BookingFormPage = () => {
+    const router = useRouter();
     const [step, setStep] = useState<number>(1);
     const totalSteps = STEP_SCHEMAS.length;
 
@@ -50,12 +53,38 @@ const BookingFormPage = () => {
     const handlePrev = () => setStep((step) => Math.max(1, step - 1));
 
     const onSubmit = async (bookingFormData: BookingFormData) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/booking`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(bookingFormData),
-        });
-        const bookingAPIResponse = await res.json();
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/booking`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(bookingFormData),
+                }
+            );
+
+            if (!res.ok) {
+                let message = "We could not complete your booking. Please try again.";
+                try {
+                    const errBody = await res.json();
+                    if (typeof errBody?.message === "string") message = errBody.message;
+                } catch {
+                    /* non-JSON error body */
+                }
+                toast.error(message);
+                return;
+            }
+
+            try {
+                await res.json();
+            } catch {
+                /* empty or non-JSON success body */
+            }
+
+            router.push("/?booking=success");
+        } catch {
+            toast.error("Something went wrong. Check your connection and try again.");
+        }
     };
 
     return (
