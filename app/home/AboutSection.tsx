@@ -13,6 +13,7 @@ const AboutSection = () => {
             src="/home-page/about/main-aboutus.png" 
             alt="Why Dublin Chooses FIXORA" 
             fill 
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 576px"
             className="object-cover"
           />
         </div>
@@ -68,7 +69,7 @@ const AboutSection = () => {
       </div>
 
       {/* 2. The FIXORA Journey */}
-      <div className="w-full bg-[#f4f4f4] py-24 lg:py-32 flex flex-col items-center justify-center">
+      <div className="w-full bg-section-bg py-24 lg:py-32 flex flex-col items-center justify-center">
         <div className="max-w-[1000px] w-full px-5 flex flex-col items-center">
           <div className="text-center mb-24">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-3">The FIXORA™ Journey</h2>

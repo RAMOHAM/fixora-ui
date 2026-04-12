@@ -15,7 +15,7 @@
   --color-secondary: #1A1E1D;
   --color-tertiary: #0D7A5F;
   --color-neutral: #1A1E1D;
-  --color-section-bg: #cdcdcd;
+  --color-section-bg: #f4f4f4;
 
   /* Fonts */
   --font-heading: var(--font-sans);

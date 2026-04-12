@@ -56,7 +56,6 @@ const BookingFormPage = () => {
             body: JSON.stringify(bookingFormData),
         });
         const bookingAPIResponse = await res.json();
-        console.log("Booking form submitted", bookingAPIResponse);
     };
 
     return (
