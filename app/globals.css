@@ -95,6 +95,13 @@ body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --section-bg: oklch(1 0 89.876);
+
+  /* Admin UI theme tokens (used in app/admin) */
+  --admin-surface: #f4f4f4;
+  --admin-sidebar-bg: #0e0f11;
+  --admin-sidebar-fg: rgba(255, 255, 255, 0.92);
+  --admin-accent: #f9c339;
+  --admin-accent-hover: #b99525;
 }
 
 .dark {
@@ -130,6 +137,13 @@ body {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --section-bg: oklch(0.18 0 0);
+
+  /* Admin UI theme tokens (dark mode) */
+  --admin-surface: #0f1113;
+  --admin-sidebar-bg: #0b0c0e;
+  --admin-sidebar-fg: rgba(255, 255, 255, 0.94);
+  --admin-accent: #f9c339;
+  --admin-accent-hover: #b99525;
 }
 
 @layer base {

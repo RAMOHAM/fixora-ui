@@ -62,7 +62,6 @@ const BookingFormPage = () => {
                     body: JSON.stringify(bookingFormData),
                 }
             );
-
             if (!res.ok) {
                 let message = "We could not complete your booking. Please try again.";
                 try {
@@ -70,17 +69,19 @@ const BookingFormPage = () => {
                     if (typeof errBody?.message === "string") message = errBody.message;
                 } catch {
                     /* non-JSON error body */
+                    console.error("Error parsing JSON response:", res.statusText);
                 }
                 toast.error(message);
                 return;
             }
-
-            try {
-                await res.json();
-            } catch {
-                /* empty or non-JSON success body */
+            else {
+                try {
+                    await res.json();
+                } catch {
+                    /* empty or non-JSON success body */
+                    console.error("Error parsing JSON response:", res.statusText);
+                }
             }
-
             router.push("/?booking=success");
         } catch {
             toast.error("Something went wrong. Check your connection and try again.");
