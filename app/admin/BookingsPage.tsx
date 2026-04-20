@@ -7,14 +7,12 @@ import {Card} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
 import {useEffect, useState} from "react";
 
-type BookingStatus = "in-progress" | "scheduled" | "completed";
-
 type BookingRow = {
     category: string;
     dateOfJob: string;
+    bookingStatus: string
     location?: string;
     professionalName?: string;
-    status?: BookingStatus;
     revenueEUR?: number;
 };
 
@@ -38,21 +36,13 @@ const MOCK_PROS: Professional[] = [
     {id: "p3", name: "Lila Thorne", role: "Designer", rating: 4.92, status: "available"},
 ];
 
-function formatEUR(amount: number) {
-    return new Intl.NumberFormat("en-IE", {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: 2,
-    }).format(amount);
-}
-
-function StatusPill({status}: { status: BookingStatus }) {
+function StatusPill({status}: { status: string }) {
     const cfg =
-        status === "in-progress"
-            ? {labelTop: "IN-", labelBottom: "PROGRESS", cls: "bg-indigo-100 text-indigo-700"}
+        status === "PENDING"
+            ? {labelTop: "PENDING", cls: "bg-indigo-100 text-indigo-700"}
             : status === "scheduled"
-                ? {labelTop: "SCHEDULED", labelBottom: "", cls: "bg-slate-100 text-slate-700"}
-                : {labelTop: "COMPLETED", labelBottom: "", cls: "bg-emerald-100 text-emerald-700"};
+                ? {labelTop: "SCHEDULED", cls: "bg-slate-100 text-slate-700"}
+                : {labelTop: "COMPLETED", cls: "bg-emerald-100 text-emerald-700"};
 
     return (
         <div
@@ -62,7 +52,6 @@ function StatusPill({status}: { status: BookingStatus }) {
             )}
         >
             <span>{cfg.labelTop}</span>
-            {cfg.labelBottom ? <span className="-mt-[2px]">{cfg.labelBottom}</span> : null}
         </div>
     );
 }
@@ -195,7 +184,7 @@ export default function BookingsPage() {
                                 </td>
 
                                 <td className="px-6 py-5">
-                                    <StatusPill status={"in-progress"}/>
+                                    <StatusPill status={booking.bookingStatus}/>
                                 </td>
 
                                 <td className="px-6 py-5 font-semibold text-slate-900">
