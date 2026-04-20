@@ -10,12 +10,12 @@ import {useEffect, useState} from "react";
 type BookingStatus = "in-progress" | "scheduled" | "completed";
 
 type BookingRow = {
-    id: string;
-    serviceType: string;
+    category: string;
+    dateOfJob: string;
     location?: string;
-    professionalName: string;
-    status: BookingStatus;
-    revenueEUR: number;
+    professionalName?: string;
+    status?: BookingStatus;
+    revenueEUR?: number;
 };
 
 type Professional = {
@@ -25,31 +25,6 @@ type Professional = {
     rating: number;
     status: "on-job" | "break" | "available";
 };
-
-const MOCK_BOOKINGS: BookingRow[] = [
-    {
-        id: "b1",
-        serviceType: "Deep Clean",
-        location: "(Villa)",
-        professionalName: "Elena Rossi",
-        status: "in-progress",
-        revenueEUR: 240,
-    },
-    {
-        id: "b2",
-        serviceType: "Interior Painting",
-        professionalName: "Marco V.",
-        status: "scheduled",
-        revenueEUR: 850,
-    },
-    {
-        id: "b3",
-        serviceType: "Emergency Plumbing",
-        professionalName: "Julian Blake",
-        status: "completed",
-        revenueEUR: 185,
-    },
-];
 
 const MOCK_PROS: Professional[] = [
     {
@@ -146,11 +121,12 @@ export default function BookingsPage() {
                         headers: { "Content-Type": "application/json" },
                     }
                 );
-                if (bookingAPIResponse.ok) {
+                if (!bookingAPIResponse.ok) {
                     throw new Error("Failed to fetch bookings");
                 }
                 const bookings = await bookingAPIResponse.json();
                 setBookings(bookings);
+                console.log("Bookings fetched successfully:", bookings);
             }catch (e) {
                 console.error("Error fetching bookings:", e);
             }finally {
@@ -178,19 +154,19 @@ export default function BookingsPage() {
                             <th className="px-6 py-3">SERVICE TYPE</th>
                             <th className="px-6 py-3">PROFESSIONAL ASSIGNED</th>
                             <th className="px-6 py-3">STATUS</th>
-                            <th className="px-6 py-3">REVENUE</th>
+                            <th className="px-6 py-3">DATE OF BOOKING</th>
                             <th className="px-6 py-3 text-right">ACTIONS</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {MOCK_BOOKINGS.map((b, idx) => (
-                            <tr key={b.id} className={cn(idx !== 0 && "border-t border-black/5")}>
+                        {bookings.map((booking, idx) => (
+                            <tr key={idx} className={cn(idx !== 0 && "border-t border-black/5")}>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-3">
                                         <div
                                             className="grid size-9 place-items-center rounded-xl bg-slate-100 ring-1 ring-black/5">
                         <span className="text-[10px] font-bold text-slate-500">
-                          {b.serviceType
+                          {booking.category
                               .split(" ")
                               .slice(0, 2)
                               .map((s) => s[0])
@@ -199,10 +175,10 @@ export default function BookingsPage() {
                                         </div>
                                         <div className="leading-tight">
                                             <div className="font-semibold text-slate-900">
-                                                {b.serviceType}
+                                                {booking.category}
                                             </div>
-                                            {b.location ? (
-                                                <div className="text-sm text-slate-500">{b.location}</div>
+                                            {booking.location ? (
+                                                <div className="text-sm text-slate-500">{booking.location}</div>
                                             ) : null}
                                         </div>
                                     </div>
@@ -210,19 +186,20 @@ export default function BookingsPage() {
 
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-3">
-                                        <AvatarDot seed={b.professionalName}/>
+                                        {/*TODO - replace with professionals*/}
+                                        <AvatarDot seed={"Test Name"}/>
                                         <div className="font-semibold text-slate-800">
-                                            {b.professionalName}
+                                            Test Name
                                         </div>
                                     </div>
                                 </td>
 
                                 <td className="px-6 py-5">
-                                    <StatusPill status={b.status}/>
+                                    <StatusPill status={"in-progress"}/>
                                 </td>
 
                                 <td className="px-6 py-5 font-semibold text-slate-900">
-                                    {formatEUR(b.revenueEUR)}
+                                    {booking.dateOfJob}
                                 </td>
 
                                 <td className="px-6 py-5 text-right">
