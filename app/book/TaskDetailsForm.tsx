@@ -1,19 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { Brush, PaintRoller, Wrench, Plug, Video } from "lucide-react";
+import { Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
-
-const categories = [
-    { id: "cleaning", label: "Cleaning", icon: Brush },
-    { id: "painting", label: "Painting", icon: PaintRoller },
-    { id: "plumbing", label: "Plumbing", icon: Wrench },
-    { id: "electrical", label: "Electrical", icon: Plug },
-];
+import { BOOKING_CATEGORIES } from "@/app/shared/categoryConfig";
 
 const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
     const { register, watch, setValue, formState: { errors } } = useFormContext<BookingFormData>();
@@ -37,7 +31,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
                     CATEGORY
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {categories.map((category) => {
+                    {BOOKING_CATEGORIES.map((category) => {
                         const Icon = category.icon;
                         const isSelected = selectedCategory === category.id;
                         return (
@@ -46,13 +40,24 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
                                 key={category.id}
                                 onClick={() => setValue("category", category.id)}
                                 className={cn(
-                                    "flex flex-col items-center justify-center p-6 border rounded-xl transition-all duration-200",
+                                    "flex flex-col items-center justify-center p-6 border rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 focus-visible:ring-offset-2",
                                     isSelected
-                                        ? "border-primary bg-primary/5 text-primarydark"
-                                        : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 text-gray-600"
+                                        ? cn(
+                                            category.selectedSurfaceClass,
+                                            category.accentClass,
+                                            "ring-2 ring-offset-2 shadow-sm",
+                                            category.selectedRingClass
+                                        )
+                                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm hover:-translate-y-[1px]"
                                 )}
                             >
-                                <Icon size={32} className="mb-4 stroke-[1.5]" />
+                                <Icon
+                                    size={32}
+                                    className={cn(
+                                        "mb-4 stroke-[1.5]",
+                                        isSelected ? category.accentClass : "text-gray-500"
+                                    )}
+                                />
                                 <span className="font-semibold text-sm">{category.label}</span>
                             </button>
                         );

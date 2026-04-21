@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -264,19 +265,26 @@ export default function BookingsPage() {
                             <tr key={idx} className={cn(idx !== 0 && "border-t border-black/5")}>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-3">
-                                        <div
-                                            className="grid size-9 place-items-center rounded-xl bg-slate-100 ring-1 ring-black/5">
-                        <span className="text-[10px] font-bold text-slate-500">
-                          {booking.category
-                              .split(" ")
-                              .slice(0, 2)
-                              .map((s) => s[0])
-                              .join("")}
-                        </span>
-                                        </div>
+                                        {(() => {
+                                            const meta = getBookingCategoryMeta(booking.category);
+                                            const Icon = meta.icon;
+                                            return (
+                                                <div
+                                                    className={cn(
+                                                        "grid size-9 place-items-center rounded-xl border ring-1 ring-black/5",
+                                                        meta.surfaceClass
+                                                    )}
+                                                >
+                                                    <Icon className={cn("size-4", meta.accentClass)} />
+                                                </div>
+                                            );
+                                        })()}
                                         <div className="min-w-0 leading-tight">
                                             <div className="font-semibold text-slate-900">
-                                                {booking.category}
+                                                {(() => {
+                                                    const meta = getBookingCategoryMeta(booking.category);
+                                                    return meta.label;
+                                                })()}
                                             </div>
                                             {booking.location ? (
                                                 <div className="text-sm text-slate-500">{booking.location}</div>
