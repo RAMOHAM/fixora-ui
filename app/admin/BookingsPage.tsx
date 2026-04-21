@@ -1,19 +1,20 @@
 "use client";
 
-import {MoreHorizontal} from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
-import {Button} from "@/components/ui/button";
-import {Card} from "@/components/ui/card";
-import {cn} from "@/lib/utils";
-import {useEffect, useState} from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type BookingRow = {
-    category: string;
-    dateOfJob: string;
-    bookingStatus: string
-    location?: string;
-    professionalName?: string;
-    revenueEUR?: number;
+  category: string;
+  dateOfJob: string;
+  bookingStatus: string;
+  location?: string;
+  professionalName?: string;
+  revenueEUR?: number;
 };
 
 type Professional = {
@@ -40,7 +41,7 @@ function StatusPill({status}: { status: string }) {
     const cfg =
         status === "PENDING"
             ? {labelTop: "PENDING", cls: "bg-indigo-100 text-indigo-700"}
-            : status === "scheduled"
+            : status === "SCHEDULED"
                 ? {labelTop: "SCHEDULED", cls: "bg-slate-100 text-slate-700"}
                 : {labelTop: "COMPLETED", cls: "bg-emerald-100 text-emerald-700"};
 
@@ -94,9 +95,120 @@ function ProStatusBadge({status}: { status: Professional["status"] }) {
     );
 }
 
+function RowActionsMenu({
+  bookingKey,
+  openId,
+  setOpenId,
+}: {
+  bookingKey: string;
+  openId: string | null;
+  setOpenId: (id: string | null) => void;
+}) {
+  const open = openId === bookingKey;
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const updatePos = () => {
+      const btn = buttonRef.current;
+      if (!btn) return;
+      const r = btn.getBoundingClientRect();
+      setPos({
+        top: r.bottom + 8,
+        right: Math.max(12, window.innerWidth - r.right),
+      });
+    };
+
+    updatePos();
+
+    const onPointerDown = (e: PointerEvent) => {
+      const el = rootRef.current;
+      if (!el) return;
+      if (e.target instanceof Node && !el.contains(e.target)) {
+        setOpenId(null);
+      }
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenId(null);
+    };
+
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, setOpenId]);
+
+  const items = useMemo(
+    () => [
+      { id: "view-video", label: "View video" },
+      { id: "confirm", label: "Confirm Appointment" },
+      { id: "details", label: "See More Details" },
+    ],
+    []
+  );
+
+  return (
+    <div className="relative inline-flex justify-end" ref={rootRef}>
+      <Button
+        ref={buttonRef}
+        variant="ghost"
+        size="icon"
+        aria-label="More actions"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpenId(open ? null : bookingKey)}
+      >
+        <MoreHorizontal />
+      </Button>
+
+      {open && pos
+        ? createPortal(
+            <div
+              role="menu"
+              aria-label="Booking actions"
+              className={cn(
+                "fixed z-[9999] w-56 overflow-hidden rounded-xl bg-white",
+                "ring-1 ring-black/10 shadow-xl"
+              )}
+              style={{ top: pos.top, right: pos.right }}
+            >
+              {items.map((item, idx) => (
+                <button
+                  key={item.id}
+                  role="menuitem"
+                  type="button"
+                  className={cn(
+                    "w-full px-4 py-2.5 text-left text-sm font-medium text-slate-800",
+                    "hover:bg-slate-50 focus:bg-slate-50 focus:outline-none",
+                    idx !== 0 && "border-t border-black/5"
+                  )}
+                  onClick={() => {
+                    setOpenId(null);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>,
+            document.body
+          )
+        : null}
+    </div>
+  );
+}
+
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<BookingRow[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
     // get all bookings on page load from backend API
     useEffect(() => {
@@ -116,9 +228,9 @@ export default function BookingsPage() {
                 const bookings = await bookingAPIResponse.json();
                 setBookings(bookings);
                 console.log("Bookings fetched successfully:", bookings);
-            }catch (e) {
+            } catch (e) {
                 console.error("Error fetching bookings:", e);
-            }finally {
+            } finally {
                 setIsLoading(false);
             }
 
@@ -136,8 +248,8 @@ export default function BookingsPage() {
                     </Button>
                 </div>
 
-                <div className="mt-4 overflow-x-auto">
-                    <table className="min-w-[760px] w-full border-separate border-spacing-0">
+                <div className="mt-4">
+                    <table className="w-full table-fixed border-separate border-spacing-0">
                         <thead>
                         <tr className="text-left text-[11px] font-bold tracking-[0.16em] text-slate-400">
                             <th className="px-6 py-3">SERVICE TYPE</th>
@@ -162,7 +274,7 @@ export default function BookingsPage() {
                               .join("")}
                         </span>
                                         </div>
-                                        <div className="leading-tight">
+                                        <div className="min-w-0 leading-tight">
                                             <div className="font-semibold text-slate-900">
                                                 {booking.category}
                                             </div>
@@ -176,9 +288,9 @@ export default function BookingsPage() {
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-3">
                                         {/*TODO - replace with professionals*/}
-                                        <AvatarDot seed={"Test Name"}/>
+                                        <AvatarDot seed={booking.professionalName ?? "Test Name"}/>
                                         <div className="font-semibold text-slate-800">
-                                            Test Name
+                                            {booking.professionalName ?? "Test Name"}
                                         </div>
                                     </div>
                                 </td>
@@ -192,9 +304,11 @@ export default function BookingsPage() {
                                 </td>
 
                                 <td className="px-6 py-5 text-right">
-                                    <Button variant="ghost" size="icon" aria-label="More actions">
-                                        <MoreHorizontal/>
-                                    </Button>
+                                  <RowActionsMenu
+                                    bookingKey={`${idx}`}
+                                    openId={openMenuId}
+                                    setOpenId={setOpenMenuId}
+                                  />
                                 </td>
                             </tr>
                         ))}
