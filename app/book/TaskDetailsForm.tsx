@@ -8,6 +8,7 @@ import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
 import { BOOKING_CATEGORIES } from "@/app/shared/categoryConfig";
+import {VideoUploadSection} from "@/app/book/VideoUploadSection";
 
 const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
     const { register, watch, setValue, formState: { errors } } = useFormContext<BookingFormData>();
@@ -79,28 +80,7 @@ const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
             </div>
 
             {/* Upload Video Section */}
-            <div className="space-y-4 pb-4">
-                <label className="block text-sm font-bold uppercase tracking-widest text-[#B99525]">
-                    UPLOAD A QUICK VIDEO WALK-THROUGH (OPTIONAL)
-                </label>
-                <div className="border-2 border-dashed border-[#d8d8ce] bg-[#f5f6f4] rounded-xl p-10 flex flex-col items-center justify-center text-center transition-colors hover:bg-[#f1f2ef] cursor-pointer">
-                    <div className="text-[#847B62] mb-4 relative">
-                        <Video size={48} className="stroke-[1.5]" />
-                        <div className="absolute -top-1 -right-1 bg-white rounded-full">
-                            {/* Fake small plus symbol, can use a lucide icon but keeping it simple */}
-                            <div className="bg-[#847B62] text-white text-[10px] w-4 h-4 rounded-sm flex items-center justify-center font-bold absolute -right-0 -top-0">
-                                +
-                            </div>
-                        </div>
-                    </div>
-                    <p className="text-gray-700 font-medium mb-6">
-                        Drag and drop your video here, or click to browse
-                    </p>
-                    <Button type="button" className="px-6 py-3 bg-[#e8e9e4] text-[#847B62] font-bold rounded-lg hover:bg-[#dfdcd5] transition-colors">
-                        Add Video
-                    </Button>
-                </div>
-            </div>
+            <VideoUploadSection setValue={setValue} />
 
             {/* Navigation Buttons */}
             <div className="pt-6 flex justify-end">
