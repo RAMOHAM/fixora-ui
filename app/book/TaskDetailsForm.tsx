@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
 import { BOOKING_CATEGORIES } from "@/app/shared/categoryConfig";
-import {VideoUploadSection} from "@/app/book/VideoUploadSection";
+import { VideoUploadSection } from "@/app/book/VideoUploadSection";
 
 const TaskDetailsForm = ({ onNext }: MultiStepFormProps) => {
     const { register, watch, setValue, formState: { errors } } = useFormContext<BookingFormData>();
