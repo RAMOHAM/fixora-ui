@@ -16,6 +16,7 @@ import {
 } from "@/app/book/schema/formSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormStepper from "@/app/book/FormStepper";
+import { uploadVideo } from "@/app/api/supabaseApi";
 
 export type MultiStepFormProps = {
     onNext?: () => void;
@@ -40,6 +41,7 @@ const BookingFormPage = () => {
             email: "",
             phone: "",
             jobDescription: "",
+            videoInput: undefined
         },
     })
 
@@ -54,12 +56,14 @@ const BookingFormPage = () => {
 
     const onSubmit = async (bookingFormData: BookingFormData) => {
         try {
+            const { videoInput, ...formData } = bookingFormData;
+            const videoId = bookingFormData.videoInput ? await uploadVideo(bookingFormData.videoInput) : undefined;
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/booking`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(bookingFormData),
+                    body: JSON.stringify({ ...formData, videoInput: videoId }),
                 }
             );
             if (!res.ok) {
@@ -68,7 +72,6 @@ const BookingFormPage = () => {
                     const errBody = await res.json();
                     if (typeof errBody?.message === "string") message = errBody.message;
                 } catch {
-                    /* non-JSON error body */
                     console.error("Error parsing JSON response:", res.statusText);
                 }
                 toast.error(message);
@@ -78,7 +81,6 @@ const BookingFormPage = () => {
                 try {
                     await res.json();
                 } catch {
-                    /* empty or non-JSON success body */
                     console.error("Error parsing JSON response:", res.statusText);
                 }
             }
@@ -95,9 +97,7 @@ const BookingFormPage = () => {
                 onSubmit={bookingForm.handleSubmit(onSubmit)}
             >
                 <div className="max-w-4xl mx-auto pt-16 px-4">
-                    {/* Stepper */}
                     <FormStepper step={step} />
-                    {/* Main Content Area */}
                     <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 md:p-12">
                         {step === 1 && <TaskDetailsForm onNext={handleNext} />}
                         {step === 2 && <AddressDetailsForm onNext={handleNext} onBack={handlePrev} />}

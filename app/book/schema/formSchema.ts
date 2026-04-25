@@ -7,7 +7,7 @@ const isoDateString = z
 export const taskFields = {
     category: z.string().min(1),
     jobDescription: z.string().min(1, { message: "Job description is required" }),
-    videoInput: z.string().optional(),
+    videoInput: (typeof File !== "undefined" ? z.instanceof(File) : z.any()).optional(),
 };
 
 export const addressFields = {
