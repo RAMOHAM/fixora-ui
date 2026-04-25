@@ -26,12 +26,8 @@ export function VideoUploadSection({ setValue }: VideoUploadSectionProps) {
             setError("Video must be under 50 MB.");
             return;
         }
-        const reader = new FileReader();
-        reader.onload = () => {
-            setValue("videoInput", reader.result as string, { shouldValidate: true, shouldDirty: true });
-            setAttached({ name: file.name, size: file.size });
-        };
-        reader.readAsDataURL(file);
+        setValue("videoInput", file, { shouldValidate: true, shouldDirty: true });
+        setAttached({ name: file.name, size: file.size });
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

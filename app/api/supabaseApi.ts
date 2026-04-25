@@ -1,6 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { uuid } from "zod";
-
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,7 +6,7 @@ const supabase = createClient(
 )
 
 export const uploadVideo = async (file: File) => {
-    const videoId = `${uuid()}-${file.name}`
+    const videoId = `${crypto.randomUUID()}-${file.name}`
     const { error } = await supabase.storage
         .from("fixora-video-uploads")
         .upload(videoId, file, {
@@ -16,6 +14,7 @@ export const uploadVideo = async (file: File) => {
             upsert: false,
         })
     if (error) {
+        console.error("Error uploading video:", error.message);
         throw new Error(error.message);
     }
     return videoId;
