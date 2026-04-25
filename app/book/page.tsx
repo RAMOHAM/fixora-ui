@@ -56,6 +56,7 @@ const BookingFormPage = () => {
 
     const onSubmit = async (bookingFormData: BookingFormData) => {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { videoInput, ...formData } = bookingFormData;
             const videoId = bookingFormData.videoInput ? await uploadVideo(bookingFormData.videoInput) : undefined;
             const res = await fetch(
