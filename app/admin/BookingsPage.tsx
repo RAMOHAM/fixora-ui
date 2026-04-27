@@ -8,12 +8,14 @@ import { cn } from "@/lib/utils";
 import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import BookingDetailsModal from "@/app/admin/BookingDetailsModal";
 
-type BookingRow = {
+export type BookingRow = {
   category: string;
   dateOfJob: string;
   bookingStatus: string;
   location?: string;
+  videoInput?: string;
   professionalName?: string;
   revenueEUR?: number;
 };
@@ -41,10 +43,10 @@ const MOCK_PROS: Professional[] = [
 function StatusPill({status}: { status: string }) {
     const cfg =
         status === "PENDING"
-            ? {labelTop: "PENDING", cls: "bg-indigo-100 text-indigo-700"}
+            ? { labelTop: "PENDING", cls: "bg-indigo-100 text-indigo-700" }
             : status === "SCHEDULED"
-                ? {labelTop: "SCHEDULED", cls: "bg-slate-100 text-slate-700"}
-                : {labelTop: "COMPLETED", cls: "bg-emerald-100 text-emerald-700"};
+                ? { labelTop: "SCHEDULED", cls: "bg-slate-100 text-slate-700"}
+                : { labelTop: "COMPLETED", cls: "bg-emerald-100 text-emerald-700" };
 
     return (
         <div
@@ -96,14 +98,11 @@ function ProStatusBadge({status}: { status: Professional["status"] }) {
     );
 }
 
-function RowActionsMenu({
-  bookingKey,
-  openId,
-  setOpenId,
-}: {
+function RowActionsMenu({bookingKey, openId, setOpenId, onViewDetails}: {
   bookingKey: string;
   openId: string | null;
   setOpenId: (id: string | null) => void;
+  onViewDetails: () => void;
 }) {
   const open = openId === bookingKey;
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -126,11 +125,17 @@ function RowActionsMenu({
     updatePos();
 
     const onPointerDown = (e: PointerEvent) => {
-      const el = rootRef.current;
-      if (!el) return;
-      if (e.target instanceof Node && !el.contains(e.target)) {
+        const el = rootRef.current;
+
+        // Check if the click was inside the menu trigger
+        if (el && el.contains(e.target as Node)) return;
+
+        // Check if the click was inside the portal menu itself
+        // We search for the role="menu" since it's in the document.body
+        const menuEl = document.querySelector('[role="menu"]');
+        if (menuEl && menuEl.contains(e.target as Node)) return;
+
         setOpenId(null);
-      }
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -147,14 +152,11 @@ function RowActionsMenu({
     };
   }, [open, setOpenId]);
 
-  const items = useMemo(
-    () => [
-      { id: "view-video", label: "View video" },
-      { id: "confirm", label: "Confirm Appointment" },
-      { id: "details", label: "See More Details" },
-    ],
-    []
-  );
+  const items =
+    [
+      { id: "confirm", label: "Confirm Appointment", onClick: onViewDetails },
+      { id: "details", label: "See More Details", onClick: onViewDetails },
+    ]
 
   return (
     <div className="relative inline-flex justify-end" ref={rootRef}>
@@ -192,7 +194,8 @@ function RowActionsMenu({
                     idx !== 0 && "border-t border-black/5"
                   )}
                   onClick={() => {
-                    setOpenId(null);
+                      setOpenId(null);
+                      item.onClick()
                   }}
                 >
                   {item.label}
@@ -210,6 +213,7 @@ export default function BookingsPage() {
     const [bookings, setBookings] = useState<BookingRow[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [selectedBooking, setSelectedBooking] = useState<BookingRow | null>(null);
 
     // get all bookings on page load from backend API
     useEffect(() => {
@@ -228,7 +232,6 @@ export default function BookingsPage() {
                 }
                 const bookings = await bookingAPIResponse.json();
                 setBookings(bookings);
-                console.log("Bookings fetched successfully:", bookings);
             } catch (e) {
                 console.error("Error fetching bookings:", e);
             } finally {
@@ -241,6 +244,12 @@ export default function BookingsPage() {
 
     return (
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+            {/*View Details Modal*/}
+            <BookingDetailsModal
+                booking={selectedBooking}
+                isOpen={!!selectedBooking}
+                onClose={() => setSelectedBooking(null)}
+            />
             <Card className="bg-white ring-1 ring-black/5">
                 <div className="flex items-center justify-between px-6 pt-6">
                     <h2 className="text-lg font-semibold text-slate-900">Recent Bookings</h2>
@@ -312,11 +321,15 @@ export default function BookingsPage() {
                                 </td>
 
                                 <td className="px-6 py-5 text-right">
-                                  <RowActionsMenu
-                                    bookingKey={`${idx}`}
-                                    openId={openMenuId}
-                                    setOpenId={setOpenMenuId}
-                                  />
+                                    <RowActionsMenu
+                                        bookingKey={`${idx}`}
+                                        openId={openMenuId}
+                                        setOpenId={setOpenMenuId}
+                                        onViewDetails={() => {
+                                            console.log("Setting selected booking:", booking);
+                                            setSelectedBooking(booking);
+                                        }}
+                                    />
                                 </td>
                             </tr>
                         ))}

@@ -20,7 +20,7 @@ export default function AdminSectionPage({
 
   return (
     <AdminPageLayout>
-      {section === "bookings" || section === "analytics" ? (
+      {section === "bookings" || section === "" ? (
         <BookingsPage />
       ) : (
         <Card className="bg-white ring-1 ring-black/5">
