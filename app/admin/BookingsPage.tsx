@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BookingDetailsModal from "@/app/admin/BookingDetailsModal";
+import {useSignedVideoUrl} from "@/app/hooks/useSignedUrl";
 
 export type BookingRow = {
   category: string;
   dateOfJob: string;
   bookingStatus: string;
-  location?: string;
+  jobDescription: string;
+  address?: string;
   videoInput?: string;
   professionalName?: string;
   revenueEUR?: number;
@@ -215,6 +217,7 @@ export default function BookingsPage() {
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [selectedBooking, setSelectedBooking] = useState<BookingRow | null>(null);
 
+
     // get all bookings on page load from backend API
     useEffect(() => {
         const fetchAllBookings = async () => {
@@ -295,8 +298,8 @@ export default function BookingsPage() {
                                                     return meta.label;
                                                 })()}
                                             </div>
-                                            {booking.location ? (
-                                                <div className="text-sm text-slate-500">{booking.location}</div>
+                                            {booking.address ? (
+                                                <div className="text-sm text-slate-500">{booking.address}</div>
                                             ) : null}
                                         </div>
                                     </div>

@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Briefcase, User, MapPin, Calendar } from "lucide-react";
 import { BookingRow } from "@/app/admin/BookingsPage";
+import { useSignedVideoUrl } from "@/app/hooks/useSignedUrl";
 
 interface BookingDetailsModalProps {
     booking: BookingRow | null;
@@ -20,6 +21,17 @@ interface BookingDetailsModalProps {
 }
 
 export default function BookingDetailsModal({ booking, isOpen, onClose }: BookingDetailsModalProps) {
+
+    const { url, load, loading } = useSignedVideoUrl({
+        bucket: "fixora-video-uploads",
+        path: booking?.videoInput || null,
+    })
+    useEffect(() => {
+        if (isOpen && booking?.videoInput) {
+            load()
+        }
+    }, [isOpen, booking?.videoInput, load])
+
     if (!booking) return null;
 
     return (
@@ -28,9 +40,7 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold">Assignment Overview</DialogTitle>
                 </DialogHeader>
-
                 <div className="space-y-8 py-4">
-
                     {/* SECTION 1: JOB DESCRIPTION */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-2 text-primary font-semibold">
@@ -48,29 +58,29 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                                 <Label htmlFor="description">Details</Label>
                                 <Textarea
                                     id="description"
-                                    value={booking.videoInput ? `Attached Video URL: ${booking.videoInput}` : "No specific details provided."}
+                                    value={booking.jobDescription}
                                     readOnly
                                     className="min-h-[100px] bg-muted"
                                 />
                             </div>
-
                             {booking.videoInput && (
                                 <div className="space-y-2">
                                     <Label>Introduction Video</Label>
                                     <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted flex items-center justify-center">
-                                        <video
-                                            className="w-full h-full object-cover"
-                                            src={booking.videoInput}
-                                            controls
-                                        />
+                                        {loading && <p>Loading video...</p>}
+                                        {url && (
+                                            <video
+                                                className="w-full h-full object-cover"
+                                                src={url}
+                                                controls
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             )}
                         </div>
                     </section>
-
                     <Separator />
-
                     {/* SECTION 2: LOCATION AND DATE/TIME */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-2 text-primary font-semibold">
@@ -83,10 +93,9 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                                 <MapPin className="text-muted-foreground w-5 h-5" />
                                 <div>
                                     <p className="text-xs text-muted-foreground">Location</p>
-                                    <p className="text-sm font-medium">{booking.location || "Not specified"}</p>
+                                    <p className="text-sm font-medium">{booking.address || "Not specified"}</p>
                                 </div>
                             </div>
-
                             <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
                                 <Calendar className="text-muted-foreground w-5 h-5" />
                                 <div>
@@ -96,9 +105,6 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                             </div>
                         </div>
                     </section>
-                </div>
-                <div className="flex justify-end gap-3">
-                    <Button variant="ghost" onClick={() => onClose()}>Close</Button>
                 </div>
             </DialogContent>
         </Dialog>
