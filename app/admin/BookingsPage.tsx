@@ -288,9 +288,6 @@ export default function BookingsPage() {
                                                     return meta.label;
                                                 })()}
                                             </div>
-                                            {booking.address ? (
-                                                <div className="text-sm text-slate-500">{booking.address}</div>
-                                            ) : null}
                                         </div>
                                     </div>
                                 </td>
