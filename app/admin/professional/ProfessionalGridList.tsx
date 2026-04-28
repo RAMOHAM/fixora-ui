@@ -1,5 +1,5 @@
 import { ProfessionalCard } from "./ProfessionalCard";
-import { Professional } from "@/app/admin/BookingsPage";
+import { Professional } from "@/app/admin/professional/ProfessionalsPage";
 
 export function ProfessionalsGridList({ professionals } : { professionals: Professional[] }) {
     return (

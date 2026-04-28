@@ -9,6 +9,7 @@ import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BookingDetailsModal from "@/app/admin/BookingDetailsModal";
+import { Professional } from "@/app/admin/professional/ProfessionalsPage";
 
 export type BookingRow = {
   category: string;
@@ -19,15 +20,6 @@ export type BookingRow = {
   videoInput?: string;
   professionalName?: string;
   revenueEUR?: number;
-};
-
-export type Professional = {
-    id: string;
-    name: string;
-    role: string;
-    rating?: number;
-    status?: "on-job" | "break" | "available" | "onboarding";
-    avatarColor?: string;
 };
 
 const MOCK_PROS: Professional[] = [

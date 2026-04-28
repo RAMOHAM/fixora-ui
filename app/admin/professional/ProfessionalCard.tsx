@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
-import { Professional } from "@/app/admin/BookingsPage";
+import { Professional } from "@/app/admin/professional/ProfessionalsPage";
 
 export function ProfessionalCard({ professional } : { professional: Professional } ) {
     const actionLabel = "View Profile";

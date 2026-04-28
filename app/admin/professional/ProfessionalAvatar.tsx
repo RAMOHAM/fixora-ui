@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Professional } from "@/app/admin/BookingsPage";
+import { Professional } from "@/app/admin/professional/ProfessionalsPage";
 
 export function ProfessionalAvatar({ professional, size = "md" }:  {professional: Professional, size?: "md" | "lg"}) {
     const sizes = {

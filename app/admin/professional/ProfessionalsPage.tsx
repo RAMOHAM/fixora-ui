@@ -3,7 +3,15 @@
 import { ProfessionalsGridList } from "@/app/admin/professional/ProfessionalGridList";
 import { Button } from "@base-ui/react";
 import { UserPlus } from "lucide-react";
-import { Professional } from "@/app/admin/BookingsPage";
+
+export type Professional = {
+    id: string;
+    name: string;
+    role: string;
+    rating?: number;
+    status?: "on-job" | "break" | "available" | "onboarding";
+    avatarColor?: string;
+};
 
 const PROFESSIONALS : Professional[] = [
     {
