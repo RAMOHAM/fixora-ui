@@ -9,7 +9,6 @@ import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BookingDetailsModal from "@/app/admin/BookingDetailsModal";
-import {useSignedVideoUrl} from "@/app/hooks/useSignedUrl";
 
 export type BookingRow = {
   category: string;
@@ -22,12 +21,13 @@ export type BookingRow = {
   revenueEUR?: number;
 };
 
-type Professional = {
+export type Professional = {
     id: string;
     name: string;
     role: string;
-    rating: number;
-    status: "on-job" | "break" | "available";
+    rating?: number;
+    status?: "on-job" | "break" | "available" | "onboarding";
+    avatarColor?: string;
 };
 
 const MOCK_PROS: Professional[] = [
@@ -230,17 +230,15 @@ export default function BookingsPage() {
                         headers: { "Content-Type": "application/json" },
                     }
                 );
-                if (!bookingAPIResponse.ok) {
-                    throw new Error("Failed to fetch bookings");
+                if (bookingAPIResponse.ok) {
+                    const bookings = await bookingAPIResponse.json();
+                    setBookings(bookings);
                 }
-                const bookings = await bookingAPIResponse.json();
-                setBookings(bookings);
             } catch (e) {
                 console.error("Error fetching bookings:", e);
             } finally {
                 setIsLoading(false);
             }
-
         }
         fetchAllBookings();
     }, [])
@@ -354,7 +352,7 @@ export default function BookingsPage() {
                             <div className="min-w-0 flex-1">
                                 <div className="truncate font-semibold text-slate-900">{p.name}</div>
                                 <div className="truncate text-sm text-slate-500">
-                                    {p.role} • {p.rating.toFixed(2)} ★
+                                    {p.role} • {p.rating && p.rating.toFixed(2)} ★
                                 </div>
                             </div>
                             <ProStatusBadge status={p.status}/>
