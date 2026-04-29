@@ -14,9 +14,6 @@ const SECTION_TITLES: Record<string, string> = {
 
 export default async function AdminSectionPage({params,}: { params: Promise<{ section: string }>; }) {
     const { section } = await params;
-    console.log("section is now", section);
-
-    console.log("section is now " + params);
     const renderSection = () => {
         switch (section) {
             case "bookings":

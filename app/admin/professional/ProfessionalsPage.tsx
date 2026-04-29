@@ -3,6 +3,8 @@
 import { ProfessionalsGridList } from "@/app/admin/professional/ProfessionalGridList";
 import { Button } from "@base-ui/react";
 import { UserPlus } from "lucide-react";
+import {useState} from "react";
+import AddProfessionalFormModal from "@/app/admin/professional/AddProfessionalFormModal";
 
 export type Professional = {
     id: string;
@@ -44,8 +46,14 @@ const PROFESSIONALS : Professional[] = [
 ];
 
 export default function ProfessionalsPage() {
+    const [isAddProfessionalModalOpen, setIsAddProfessionalModalOpen] = useState<boolean>(false);
     return (
         <div className="bg-gray-50">
+            {/*Add Professional Modal */}
+            <AddProfessionalFormModal
+                isOpen={isAddProfessionalModalOpen}
+                onClose={() => {setIsAddProfessionalModalOpen(false)}}
+            />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex flex-col gap-1">
@@ -64,6 +72,7 @@ export default function ProfessionalsPage() {
                     <div className="shrink-0">
                         <Button
                             className="flex items-center bg-secondary hover:bg-gray-800 text-white rounded-2xl px-5 py-2.5 h-auto text-sm font-semibold gap-2 shadow-sm transition-colors"
+                            onClick={() => setIsAddProfessionalModalOpen(true)}
                         >
                             <UserPlus className="w-4 h-4 shrink-0" />
                             <span>Add New Professional</span>

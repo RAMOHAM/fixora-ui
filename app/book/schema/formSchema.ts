@@ -35,10 +35,10 @@ export const addressFormSchema = z.object(addressFields);
 export const contactFormSchema = z.object(contactFields);
 
 
-export const BookingFormSchema = z.object({
+export const FormSchema = z.object({
     ...taskFields,
     ...addressFields,
     ...contactFields,
 });
 
-export type BookingFormData = z.infer<typeof BookingFormSchema>;
+export type BookingFormData = z.infer<typeof FormSchema>;
