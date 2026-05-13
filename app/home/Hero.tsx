@@ -58,7 +58,7 @@ export default function Hero() {
         <div className="relative w-full max-w-[480px] h-[350px] sm:h-[450px] lg:h-[500px] transform lg:rotate-[4deg] z-0">
           <div className="w-full h-full rounded-3xl overflow-hidden shadow-2xl relative">
             <Image 
-              src="/heroImage.png" 
+              src="/home-page/heroImage.png" 
               alt="Beautiful Dublin Residence Interior" 
               fill
               className="object-cover"

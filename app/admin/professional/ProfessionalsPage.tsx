@@ -3,8 +3,13 @@
 import { ProfessionalsGridList } from "@/app/admin/professional/ProfessionalGridList";
 import { Button } from "@base-ui/react";
 import { UserPlus } from "lucide-react";
-import {useState} from "react";
-import AddProfessionalFormModal from "@/app/admin/professional/AddProfessionalFormModal";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+
+const AddProfessionalFormModal = dynamic(
+    () => import("@/app/admin/professional/AddProfessionalFormModal"),
+    { ssr: false, loading: () => null },
+);
 
 export type Professional = {
     id: string;

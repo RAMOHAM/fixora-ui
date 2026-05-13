@@ -49,11 +49,11 @@ export default function ServicesListSection() {
               {/* Fade gradient overlay for smooth blend. The mock has a faded image. */}
               <div className="absolute inset-0 bg-gradient-to-r from-card via-card/80 to-transparent z-10 pointer-events-none w-1/2" />
               <div className="absolute inset-y-0 right-0 w-[120%] h-full bg-muted flex items-center justify-center">
-                 <Image src="/cleaning-service.png" width={800} height={800} alt="Cleaning" className="w-full h-full object-cover opacity-50 mix-blend-multiply" />
+                 <Image src="/home-page/services/cleaning-service.png" width={800} height={800} alt="Cleaning" className="w-full h-full object-cover opacity-50 mix-blend-multiply" />
               </div>
             </div>
             <div className="w-full h-48 order-1 overflow-hidden relative md:hidden">
-                 <Image src="/cleaning-service.png" width={800} height={800} alt="Cleaning" className="w-full h-full object-cover opacity-50" />
+                 <Image src="/home-page/services/cleaning-service.png" width={800} height={800} alt="Cleaning" className="w-full h-full object-cover opacity-50" />
             </div>
           </Card>
 
@@ -70,7 +70,7 @@ export default function ServicesListSection() {
             </div>
             <div className="p-4 md:p-6 pt-2 flex-1 w-full flex flex-col">
                <div className="relative w-full h-48 md:h-52 rounded-[20px] overflow-hidden shadow-sm bg-muted">
-                 <Image src="/painting-service.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Painting brushes" className="object-cover object-center" />
+                 <Image src="/home-page/services/painting-service.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Painting brushes" className="object-cover object-center" />
                </div>
             </div>
           </Card>
@@ -88,7 +88,7 @@ export default function ServicesListSection() {
             </div>
             <div className="p-4 md:p-6 pt-2 flex-1 w-full flex flex-col">
                <div className="relative w-full h-48 md:h-52 rounded-[20px] overflow-hidden shadow-sm bg-muted">
-                 <Image src="/plumbing-service.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Plumbing Faucet" className="object-cover object-center" />
+                 <Image src="/home-page/services/plumbing-service.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Plumbing Faucet" className="object-cover object-center" />
                </div>
             </div>
           </Card>
@@ -113,7 +113,7 @@ export default function ServicesListSection() {
             </div>
             <div className="w-full md:w-[45%] h-64 md:h-auto overflow-hidden p-4 lg:p-5 pl-0 relative">
                <div className="w-full h-full rounded-[20px] overflow-hidden ml-4 md:ml-0 shadow-sm relative">
-                 <Image src="/ceiling-image.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Electrical Chandelier" className="object-cover object-center" />
+                 <Image src="/home-page/services/ceiling-image.png" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="Electrical Chandelier" className="object-cover object-center" />
                </div>
             </div>
           </Card>
