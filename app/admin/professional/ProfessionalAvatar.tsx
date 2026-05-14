@@ -13,7 +13,7 @@ export function ProfessionalAvatar({ professional, size = "md" }:  {professional
                     "rounded-xl flex items-center justify-center font-bold text-white select-none",
                     sizes[size]
                 )}
-                style={{ backgroundColor: professional.avatarColor }}
+                style={{ backgroundColor: "#1b2d2d" }}
             >
                 {"NA"}
             </div>

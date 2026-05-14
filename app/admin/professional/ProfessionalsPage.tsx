@@ -4,7 +4,7 @@ import { ProfessionalsGridList } from "@/app/admin/professional/ProfessionalGrid
 import { Button } from "@base-ui/react";
 import { UserPlus } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
 const AddProfessionalFormModal = dynamic(
     () => import("@/app/admin/professional/AddProfessionalFormModal"),
@@ -13,45 +13,43 @@ const AddProfessionalFormModal = dynamic(
 
 export type Professional = {
     id: string;
-    name: string;
-    role: string;
+    workerName: string;
+    workerEmail: string;
+    category: string;
+    phoneNumber: string;
     rating?: number;
     status?: "on-job" | "break" | "available" | "onboarding";
     avatarColor?: string;
 };
 
-const PROFESSIONALS : Professional[] = [
-    {
-        id: "1",
-        name: "Marcus Chen",
-        role: "Master Electrician",
-        avatarColor: "#1a1a2e",
-    },
-    {
-        id: "2",
-        name: "Elena Rodriguez",
-        role: "Interior Painter",
-        status: "onboarding",
-        avatarColor: "#2d1b2e",
-    },
-    {
-        id: "3",
-        name: "Jordan Smith",
-        role: "HVAC Specialist",
-        status: "available",
-        avatarColor: "#1a1a1a",
-    },
-    {
-        id: "4",
-        name: "Sarah Jenkins",
-        role: "Eco-Cleaning Lead",
-        status: "available",
-        avatarColor: "#1b2d2d",
-    },
-];
-
 export default function ProfessionalsPage() {
     const [isAddProfessionalModalOpen, setIsAddProfessionalModalOpen] = useState<boolean>(false);
+    const [loading, setIsLoading] = useState<boolean>(true);
+    const [professionalsList, setProfessionalsList] = useState<Professional[]>([]);
+    // get all bookings on page load from backend API
+    useEffect(() => {
+        const fetchAllProfessionals = async () => {
+            setIsLoading(true);
+            try {
+                const professionalListAPIResponse = await fetch(
+                    `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/professionals`,
+                    {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+                if (professionalListAPIResponse.ok) {
+                    const professionals = await professionalListAPIResponse.json();
+                    setProfessionalsList(professionals);
+                }
+            } catch (e) {
+                console.error("Error fetching bookings:", e);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchAllProfessionals();
+    }, [])
     return (
         <div className="bg-gray-50">
             {/*Add Professional Modal */}
@@ -85,7 +83,7 @@ export default function ProfessionalsPage() {
                     </div>
                 </div>
                 <ProfessionalsGridList
-                    professionals={PROFESSIONALS}
+                    professionals={professionalsList}
                 />
             </div>
         </div>

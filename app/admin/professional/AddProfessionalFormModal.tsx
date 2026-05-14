@@ -62,7 +62,6 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
 
     const onSubmit = async (data: ProfessionalFormSchema) => {
         const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
-        console.log(data);
         if (!baseUrl) {
             toast.error("Backend URL is not configured (NEXT_PUBLIC_BACKEND_SERVER_URL).");
             return;

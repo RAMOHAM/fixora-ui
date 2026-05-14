@@ -15,9 +15,9 @@ export function ProfessionalCard({ professional } : { professional: Professional
             </div>
             <div className="flex flex-col gap-1">
                 <h3 className="text-base font-bold text-gray-900 leading-tight">
-                    {professional.name}
+                    {professional.workerName}
                 </h3>
-                <p className="text-sm font-medium text-primary">{professional.role}</p>
+                <p className="text-sm font-medium text-primary">{professional.category}</p>
             </div>
             <div className="flex items-center gap-2 pt-1">
                 <Button
