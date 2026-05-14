@@ -1,29 +1,21 @@
 "use client";
 
 import { ProfessionalsGridList } from "@/app/admin/professional/ProfessionalGridList";
-import { Button } from "@base-ui/react";
+import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import dynamic from "next/dynamic";
 import {useEffect, useState} from "react";
+import { getProfessionalId, Professional } from "@/app/admin/types";
 
 const AddProfessionalFormModal = dynamic(
     () => import("@/app/admin/professional/AddProfessionalFormModal"),
     { ssr: false, loading: () => null },
 );
 
-export type Professional = {
-    id: string;
-    workerName: string;
-    workerEmail: string;
-    category: string;
-    phoneNumber: string;
-    rating?: number;
-    status?: "on-job" | "break" | "available" | "onboarding";
-    avatarColor?: string;
-};
-
 export default function ProfessionalsPage() {
     const [isAddProfessionalModalOpen, setIsAddProfessionalModalOpen] = useState<boolean>(false);
+    const [modalMode, setModalMode] = useState<"create" | "view" | "edit">("create");
+    const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
     const [loading, setIsLoading] = useState<boolean>(true);
     const [professionalsList, setProfessionalsList] = useState<Professional[]>([]);
     // get all bookings on page load from backend API
@@ -50,12 +42,45 @@ export default function ProfessionalsPage() {
         }
         fetchAllProfessionals();
     }, [])
+
+    const openCreateModal = () => {
+        setSelectedProfessional(null);
+        setModalMode("create");
+        setIsAddProfessionalModalOpen(true);
+    };
+
+    const openViewModal = (professional: Professional) => {
+        setSelectedProfessional(professional);
+        setModalMode("view");
+        setIsAddProfessionalModalOpen(true);
+    };
+
+    const openEditModal = (professional: Professional) => {
+        setSelectedProfessional(professional);
+        setModalMode("edit");
+        setIsAddProfessionalModalOpen(true);
+    };
+
+    const handleSavedProfessional = (professional: Professional) => {
+        const savedId = getProfessionalId(professional);
+        setProfessionalsList((current) => {
+            const exists = current.some((item) => getProfessionalId(item) === savedId);
+            if (!exists) return [professional, ...current];
+            return current.map((item) =>
+                getProfessionalId(item) === savedId ? { ...item, ...professional } : item,
+            );
+        });
+    };
+
     return (
         <div className="bg-gray-50">
             {/*Add Professional Modal */}
             <AddProfessionalFormModal
                 isOpen={isAddProfessionalModalOpen}
                 onClose={() => {setIsAddProfessionalModalOpen(false)}}
+                mode={modalMode}
+                professional={selectedProfessional}
+                onSaved={handleSavedProfessional}
             />
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -75,7 +100,7 @@ export default function ProfessionalsPage() {
                     <div className="shrink-0">
                         <Button
                             className="flex items-center bg-secondary hover:bg-gray-800 text-white rounded-2xl px-5 py-2.5 h-auto text-sm font-semibold gap-2 shadow-sm transition-colors"
-                            onClick={() => setIsAddProfessionalModalOpen(true)}
+                            onClick={openCreateModal}
                         >
                             <UserPlus className="w-4 h-4 shrink-0" />
                             <span>Add New Professional</span>
@@ -84,6 +109,9 @@ export default function ProfessionalsPage() {
                 </div>
                 <ProfessionalsGridList
                     professionals={professionalsList}
+                    isLoading={loading}
+                    onView={openViewModal}
+                    onEdit={openEditModal}
                 />
             </div>
         </div>

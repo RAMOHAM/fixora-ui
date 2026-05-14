@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Briefcase, User, MapPin, Calendar } from "lucide-react";
-import { BookingRow } from "@/app/admin/BookingsPage";
+import { BookingRow } from "@/app/admin/types";
 import { useSignedVideoUrl } from "@/app/hooks/useSignedUrl";
 
 interface BookingDetailsModalProps {
@@ -85,7 +85,7 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                     <section className="space-y-4">
                         <div className="flex items-center gap-2 text-primary font-semibold">
                             <User className="w-5 h-5" />
-                            <h3>Location and Date & Time</h3>
+                            <h3>Location, Contact, and Date & Time</h3>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -101,6 +101,20 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                                 <div>
                                     <p className="text-xs text-muted-foreground">Date and Time</p>
                                     <p className="text-sm font-medium">{booking.dateOfJob || "Not specified"}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 rounded-lg border bg-card">
+                                <User className="text-muted-foreground w-5 h-5" />
+                                <div>
+                                    <p className="text-xs text-muted-foreground">Customer</p>
+                                    <p className="text-sm font-medium">
+                                        {booking.customerName || booking.email || "Not specified"}
+                                    </p>
+                                    {(booking.email || booking.phone) && (
+                                        <p className="text-xs text-muted-foreground">
+                                            {[booking.email, booking.phone].filter(Boolean).join(" · ")}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>

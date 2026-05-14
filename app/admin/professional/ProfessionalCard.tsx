@@ -3,9 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
-import { Professional } from "@/app/admin/professional/ProfessionalsPage";
+import { Professional } from "@/app/admin/types";
 
-export function ProfessionalCard({ professional } : { professional: Professional } ) {
+export function ProfessionalCard({
+    professional,
+    onView,
+    onEdit,
+} : {
+    professional: Professional;
+    onView: () => void;
+    onEdit: () => void;
+}) {
     const actionLabel = "View Profile";
 
     return (
@@ -23,6 +31,7 @@ export function ProfessionalCard({ professional } : { professional: Professional
                 <Button
                     variant="outline"
                     className="flex-1 text-sm font-medium h-9 rounded-xl border-gray-200 hover:bg-gray-50"
+                    onClick={onView}
                 >
                     {actionLabel}
                 </Button>
@@ -30,6 +39,8 @@ export function ProfessionalCard({ professional } : { professional: Professional
                     variant="outline"
                     size="icon"
                     className="h-9 w-9 rounded-xl border-gray-200 hover:bg-gray-50 shrink-0"
+                    aria-label={`Edit ${professional.workerName}`}
+                    onClick={onEdit}
                 >
                     <Pencil className="w-3.5 h-3.5 text-gray-500" />
                 </Button>

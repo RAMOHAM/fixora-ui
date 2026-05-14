@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Professional } from "@/app/admin/professional/ProfessionalsPage";
+import { Professional } from "@/app/admin/types";
 
 export function ProfessionalAvatar({ professional, size = "md" }:  {professional: Professional, size?: "md" | "lg"}) {
     const sizes = {
@@ -15,7 +15,12 @@ export function ProfessionalAvatar({ professional, size = "md" }:  {professional
                 )}
                 style={{ backgroundColor: "#1b2d2d" }}
             >
-                {"NA"}
+                {professional.workerName
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join("")
+                    .toUpperCase() || "NA"}
             </div>
             <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-white">
                 <svg

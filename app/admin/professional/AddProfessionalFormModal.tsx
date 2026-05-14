@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import React, { useEffect } from "react";
 import { BOOKING_CATEGORIES } from "@/app/shared/categoryConfig";
 import { cn } from "@/lib/utils";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     addProfessionalFormSchema,
@@ -15,6 +15,7 @@ import {
 } from "@/app/admin/professional/schema/professionalFormSchema";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { getProfessionalId, Professional } from "@/app/admin/types";
 
 /** POST body uses the same camelCase fields as the booking flow (`/api/booking`). */
 const PROFESSIONAL_CREATE_PATH = "/api/professionals";
@@ -26,12 +27,21 @@ const nativeInputClassName =
 type AddProfessionalFormModalProps = {
     isOpen: boolean;
     onClose: () => void;
+    mode?: "create" | "view" | "edit";
+    professional?: Professional | null;
+    onSaved?: (professional: Professional) => void;
 };
 
-const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalProps) => {
+const AddProfessionalFormModal = ({
+    isOpen,
+    onClose,
+    mode = "create",
+    professional,
+    onSaved,
+}: AddProfessionalFormModalProps) => {
     const {
         register,
-        watch,
+        control,
         handleSubmit,
         reset,
         formState: { errors, isSubmitting },
@@ -46,34 +56,50 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
         },
     });
 
-    const category = watch("category");
+    const isViewMode = mode === "view";
+    const isEditMode = mode === "edit";
+    const category = useWatch({ control, name: "category" });
     const selected = category ? BOOKING_CATEGORIES.find((c) => c.id === category) : undefined;
 
     useEffect(() => {
         if (isOpen) {
             reset({
-                category: "",
-                workerName: "",
-                workerEmail: "",
-                phoneNumber: "",
+                category: professional?.category ?? "",
+                workerName: professional?.workerName ?? "",
+                workerEmail: professional?.workerEmail ?? "",
+                phoneNumber: professional?.phoneNumber ?? "",
             });
         }
-    }, [isOpen, reset]);
+    }, [isOpen, professional, reset]);
 
     const onSubmit = async (data: ProfessionalFormSchema) => {
+        if (isViewMode) return;
+
         const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
         if (!baseUrl) {
             toast.error("Backend URL is not configured (NEXT_PUBLIC_BACKEND_SERVER_URL).");
             return;
         }
+
+        const professionalId = professional ? getProfessionalId(professional) : "";
+        if (isEditMode && !professionalId) {
+            toast.error("This professional is missing an id, so it cannot be updated yet.");
+            return;
+        }
+
         try {
-            const res = await fetch(`${baseUrl}${PROFESSIONAL_CREATE_PATH}`, {
-                method: "POST",
+            const res = await fetch(
+                isEditMode
+                    ? `${baseUrl}${PROFESSIONAL_CREATE_PATH}/${professionalId}`
+                    : `${baseUrl}${PROFESSIONAL_CREATE_PATH}`,
+                {
+                method: isEditMode ? "PUT" : "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-            });
+                },
+            );
             if (!res.ok) {
-                let message = "Could not add professional. Please try again.";
+                let message = `Could not ${isEditMode ? "update" : "add"} professional. Please try again.`;
                 try {
                     const errBody = await res.json();
                     if (typeof errBody?.message === "string") message = errBody.message;
@@ -83,7 +109,23 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                 toast.error(message);
                 return;
             }
-            toast.success("Professional added.");
+            let savedProfessional: Professional | null = null;
+            try {
+                savedProfessional = await res.json();
+            } catch {
+                savedProfessional = null;
+            }
+            toast.success(isEditMode ? "Professional updated." : "Professional added.");
+            onSaved?.(
+                savedProfessional ?? ({
+                    id: professionalId || crypto.randomUUID(),
+                    ...professional,
+                    workerName: data.workerName,
+                    workerEmail: data.workerEmail,
+                    category: data.category,
+                    phoneNumber: data.phoneNumber,
+                } as Professional),
+            );
             onClose();
         } catch {
             toast.error("Something went wrong. Check your connection and try again.");
@@ -95,7 +137,9 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                 <form onSubmit={handleSubmit(onSubmit)} className="contents">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold">Add Professional</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold">
+                            {isViewMode ? "Professional Profile" : isEditMode ? "Update Professional" : "Add Professional"}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-8 py-4">
                         <section className="space-y-4">
@@ -107,6 +151,7 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                                         placeholder="Enter worker name"
                                         className={cn(nativeInputClassName, "bg-muted")}
                                         autoComplete="name"
+                                        disabled={isViewMode}
                                         {...register("workerName")}
                                     />
                                     {errors.workerName && (
@@ -123,6 +168,7 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                                         placeholder="Enter worker email"
                                         className={cn(nativeInputClassName, "bg-muted")}
                                         autoComplete="email"
+                                        disabled={isViewMode}
                                         {...register("workerEmail")}
                                     />
                                     {errors.workerEmail && (
@@ -139,6 +185,7 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                                         placeholder="Enter worker phone number"
                                         className={cn(nativeInputClassName, "bg-muted")}
                                         autoComplete="tel"
+                                        disabled={isViewMode}
                                         {...register("phoneNumber")}
                                     />
                                     {errors.phoneNumber && (
@@ -169,6 +216,7 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                                                 "ring-2",
                                             ],
                                         )}
+                                        disabled={isViewMode}
                                         {...register("category")}
                                     >
                                         <option value="">Select a category</option>
@@ -189,18 +237,22 @@ const AddProfessionalFormModal = ({ isOpen, onClose }: AddProfessionalFormModalP
                     </div>
                     <DialogFooter className="mt-2 sm:justify-end gap-2">
                         <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-                            Cancel
+                            {isViewMode ? "Close" : "Cancel"}
                         </Button>
-                        <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Saving…
-                                </>
-                            ) : (
-                                "Add professional"
-                            )}
-                        </Button>
+                        {!isViewMode && (
+                            <Button type="submit" disabled={isSubmitting} className="min-w-[140px]">
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : isEditMode ? (
+                                    "Update professional"
+                                ) : (
+                                    "Add professional"
+                                )}
+                            </Button>
+                        )}
                     </DialogFooter>
                 </form>
             </DialogContent>
