@@ -59,14 +59,11 @@ const BookingFormPage = () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { videoInput, ...formData } = bookingFormData;
             const videoId = bookingFormData.videoInput ? await uploadVideo(bookingFormData.videoInput) : undefined;
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/booking`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ ...formData, videoInput: videoId }),
-                }
-            );
+            const res = await fetch("/api/booking", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...formData, videoInput: videoId }),
+            });
             if (!res.ok) {
                 let message = "We could not complete your booking. Please try again.";
                 try {

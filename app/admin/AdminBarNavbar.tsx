@@ -1,6 +1,9 @@
 "use client";
 
-import { Bell, Menu, Search, Settings } from "lucide-react";
+import { Bell, LogOut, Menu, Search, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +15,53 @@ export default function AdminBarNavbar({
 }: {
   onMenuClick?: () => void;
 }) {
+  const router = useRouter();
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const response = await fetch("/api/auth/me", { cache: "no-store" });
+      if (!response.ok) return;
+
+      const payload = await response.json().catch(() => null);
+      if (payload?.user && typeof payload.user === "object") setUser(payload.user);
+    };
+
+    loadUser();
+  }, []);
+
+  const initials = useMemo(() => {
+    const name =
+      typeof user?.fullName === "string"
+        ? user.fullName
+        : typeof user?.name === "string"
+          ? user.name
+          : typeof user?.email === "string"
+            ? user.email
+            : "Admin";
+
+    return name
+      .split(/[ @._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "AD";
+  }, [user]);
+
+  const logout = async () => {
+    setLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.replace("/auth/login");
+      router.refresh();
+    } catch {
+      toast.error("Could not sign out. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
   return (
     <header
       className={cn(
@@ -57,8 +107,18 @@ export default function AdminBarNavbar({
             <Settings className="size-5" />
           </Button>
 
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Sign out"
+            onClick={logout}
+            disabled={loggingOut}
+          >
+            <LogOut className="size-5" />
+          </Button>
+
           <div className="ml-1 grid size-9 place-items-center rounded-full bg-gradient-to-br from-slate-200 to-slate-100 ring-1 ring-black/5">
-            <span className="text-xs font-semibold text-slate-700">RA</span>
+            <span className="text-xs font-semibold text-slate-700">{initials}</span>
           </div>
         </div>
       </div>

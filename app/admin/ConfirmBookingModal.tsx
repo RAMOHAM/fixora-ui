@@ -27,8 +27,6 @@ type ConfirmBookingModalProps = {
   onConfirmed: (booking: BookingRow) => void;
 };
 
-const CONFIRM_BOOKING_PATH = "/api/booking";
-
 function professionalIsAssignable(professional: Professional, booking: BookingRow) {
   const proCategory = professional.category?.trim().toLowerCase();
   const bookingCategory = booking.category?.trim().toLowerCase();
@@ -66,11 +64,6 @@ export default function ConfirmBookingModal({
   const CategoryIcon = categoryMeta.icon;
 
   const confirmBooking = async () => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
-    if (!baseUrl) {
-      toast.error("Backend URL is not configured (NEXT_PUBLIC_BACKEND_SERVER_URL).");
-      return;
-    }
     if (!bookingId) {
       toast.error("This booking is missing an id, so it cannot be confirmed yet.");
       return;
@@ -82,7 +75,7 @@ export default function ConfirmBookingModal({
 
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${baseUrl}${CONFIRM_BOOKING_PATH}/${bookingId}/confirm`, {
+      const res = await fetch(`/api/booking/${bookingId}/confirm`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -34,7 +34,7 @@ const AboutSection = () => {
               <div className="flex flex-col gap-1.5 pt-0.5">
                 <h3 className="text-[22px] font-bold">Fully Managed Excellence</h3>
                 <p className="text-muted-foreground text-[15px] leading-relaxed">
-                  We don't just connect you; we manage the entire project from initial booking to the final quality inspection.
+                  We don&apos;t just connect you; we manage the entire project from initial booking to the final quality inspection.
                 </p>
               </div>
             </div>
@@ -47,7 +47,7 @@ const AboutSection = () => {
               <div className="flex flex-col gap-1.5 pt-0.5">
                 <h3 className="text-[22px] font-bold">Vetted Technicians</h3>
                 <p className="text-muted-foreground text-[15px] leading-relaxed">
-                  Our professionals undergo a rigorous 20-point vetting process. Only the top 5% of Dublin's tradespeople join our fleet.
+                  Our professionals undergo a rigorous 20-point vetting process. Only the top 5% of Dublin&apos;s tradespeople join our fleet.
                 </p>
               </div>
             </div>
@@ -60,7 +60,7 @@ const AboutSection = () => {
               <div className="flex flex-col gap-1.5 pt-0.5">
                 <h3 className="text-[22px] font-bold">Clean Work Protocol</h3>
                 <p className="text-muted-foreground text-[15px] leading-relaxed">
-                  We leave your home in "showhouse" condition. Our technicians follow a strict zero-trace cleanup policy after every job.
+                  We leave your home in &quot;showhouse&quot; condition. Our technicians follow a strict zero-trace cleanup policy after every job.
                 </p>
               </div>
             </div>

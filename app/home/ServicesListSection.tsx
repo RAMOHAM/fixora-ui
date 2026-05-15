@@ -36,7 +36,7 @@ export default function ServicesListSection() {
                 <span className="bg-section-bg text-secondary-foreground text-[11px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm">End of Tenancy</span>
               </div>
               <p className="text-muted-foreground max-w-sm text-base md:text-[17px] mb-8 leading-relaxed font-medium">
-                Hospital-grade hygiene standards for Dublin's most discerning homeowners.
+                Hospital-grade hygiene standards for Dublin&apos;s most discerning homeowners.
               </p>
               <div>
                 <a href="#" className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors gap-2">

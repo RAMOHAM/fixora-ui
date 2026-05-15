@@ -23,13 +23,10 @@ export default function ProfessionalsPage() {
         const fetchAllProfessionals = async () => {
             setIsLoading(true);
             try {
-                const professionalListAPIResponse = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_SERVER_URL}/api/professionals`,
-                    {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json" },
-                    }
-                );
+                const professionalListAPIResponse = await fetch("/api/professionals", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
                 if (professionalListAPIResponse.ok) {
                     const professionals = await professionalListAPIResponse.json();
                     setProfessionalsList(professionals);

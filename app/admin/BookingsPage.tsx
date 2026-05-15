@@ -357,13 +357,6 @@ export default function BookingsPage() {
   }, []);
 
   const fetchBookings = useCallback(async () => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
-    if (!baseUrl) {
-      toast.error("Backend URL is not configured (NEXT_PUBLIC_BACKEND_SERVER_URL).");
-      setIsLoadingBookings(false);
-      return;
-    }
-
     setIsLoadingBookings(true);
     try {
       const params = new URLSearchParams({
@@ -373,7 +366,7 @@ export default function BookingsPage() {
       if (activeStatus !== "ALL") params.set("status", activeStatus);
       if (searchTerm.trim()) params.set("search", searchTerm.trim());
 
-      const res = await fetch(`${baseUrl}/api/booking?${params.toString()}`, {
+      const res = await fetch(`/api/booking?${params.toString()}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -397,15 +390,9 @@ export default function BookingsPage() {
   }, [activeStatus, page, pageSize, searchTerm]);
 
   const fetchProfessionals = useCallback(async () => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
-    if (!baseUrl) {
-      setIsLoadingProfessionals(false);
-      return;
-    }
-
     setIsLoadingProfessionals(true);
     try {
-      const res = await fetch(`${baseUrl}/api/professionals`, {
+      const res = await fetch("/api/professionals", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -475,15 +462,14 @@ export default function BookingsPage() {
   };
 
   const cancelBooking = async (booking: BookingRow) => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
     const bookingId = getBookingId(booking);
-    if (!baseUrl || !bookingId) {
+    if (!bookingId) {
       toast.error("This booking cannot be cancelled yet.");
       return;
     }
 
     try {
-      const res = await fetch(`${baseUrl}/api/booking/${bookingId}/cancel`, {
+      const res = await fetch(`/api/booking/${bookingId}/cancel`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookingStatus: "CANCELLED" }),

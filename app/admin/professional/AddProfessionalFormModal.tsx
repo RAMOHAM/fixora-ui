@@ -17,9 +17,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { getProfessionalId, Professional } from "@/app/admin/types";
 
-/** POST body uses the same camelCase fields as the booking flow (`/api/booking`). */
-const PROFESSIONAL_CREATE_PATH = "/api/professionals";
-
 /** Mirrors `components/ui/input` styles but uses a native `<input>` so Base UI `Input` → `Field` is not bundled here. That avoids a Turbopack/RSC issue where `useFormContext` from `@base-ui/react/form` can be resolved to `react-hook-form`'s `useFormContext` in the same chunk (null → crash). */
 const nativeInputClassName =
     "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40";
@@ -75,12 +72,6 @@ const AddProfessionalFormModal = ({
     const onSubmit = async (data: ProfessionalFormSchema) => {
         if (isViewMode) return;
 
-        const baseUrl = process.env.NEXT_PUBLIC_BACKEND_SERVER_URL;
-        if (!baseUrl) {
-            toast.error("Backend URL is not configured (NEXT_PUBLIC_BACKEND_SERVER_URL).");
-            return;
-        }
-
         const professionalId = professional ? getProfessionalId(professional) : "";
         if (isEditMode && !professionalId) {
             toast.error("This professional is missing an id, so it cannot be updated yet.");
@@ -90,8 +81,8 @@ const AddProfessionalFormModal = ({
         try {
             const res = await fetch(
                 isEditMode
-                    ? `${baseUrl}${PROFESSIONAL_CREATE_PATH}/${professionalId}`
-                    : `${baseUrl}${PROFESSIONAL_CREATE_PATH}`,
+                    ? `/api/professionals/${professionalId}`
+                    : "/api/professionals",
                 {
                 method: isEditMode ? "PUT" : "POST",
                 headers: { "Content-Type": "application/json" },

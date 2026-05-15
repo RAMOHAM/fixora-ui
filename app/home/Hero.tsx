@@ -17,7 +17,7 @@ export default function Hero() {
         </h1>
         
         <p className="text-[17px] text-secondary/80 max-w-lg font-body mt-2 leading-relaxed text-center sm:text-left mx-auto sm:mx-0">
-          Excellence in every detail. From Georgian townhouses to modern docks, we provide curated maintenance for Dublin's finest residences.
+          Excellence in every detail. From Georgian townhouses to modern docks, we provide curated maintenance for Dublin&apos;s finest residences.
         </p>
 
         {/* Search Bar */}
