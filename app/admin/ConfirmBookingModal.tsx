@@ -23,13 +23,6 @@ import {
   getProfessionalId,
   Professional,
 } from "@/app/admin/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type ConfirmBookingModalProps = {
   booking: BookingRow | null;
@@ -62,6 +55,7 @@ export default function ConfirmBookingModal({
   const [professionalId, setProfessionalId] = useState("");
   const [adminNotes, setAdminNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const currentBookingId = booking ? getBookingId(booking) : "";
 
   const assignableProfessionals = useMemo(() => {
     if (!booking) return [];
@@ -72,13 +66,20 @@ export default function ConfirmBookingModal({
 
   useEffect(() => {
     if (!isOpen) return;
-    setProfessionalId("");
+    setProfessionalId(
+      booking?.professionalId ?? booking?.assignedProfessionalId ?? "",
+    );
     setAdminNotes("");
-  }, [isOpen, booking]);
+  }, [
+    isOpen,
+    currentBookingId,
+    booking?.professionalId,
+    booking?.assignedProfessionalId,
+  ]);
 
   if (!booking) return null;
 
-  const bookingId = getBookingId(booking);
+  const bookingId = currentBookingId;
   const categoryMeta = getBookingCategoryMeta(booking.category);
   const CategoryIcon = categoryMeta.icon;
 
@@ -220,25 +221,22 @@ export default function ConfirmBookingModal({
             <div className="space-y-2">
               <Label htmlFor="professionalId">Professional</Label>
 
-              <Select
+              <select
+                id="professionalId"
                 value={professionalId}
-                onValueChange={(value) => setProfessionalId(value ?? "")}
+                onChange={(event) => setProfessionalId(event.target.value)}
+                className="h-11 w-full rounded-lg border border-input bg-white px-3 text-sm font-medium shadow-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
               >
-                <SelectTrigger className="h-11 w-full">
-                  <SelectValue placeholder="Select a professional" />
-                </SelectTrigger>
-
-                <SelectContent>
-                  {assignableProfessionals.map((professional) => (
-                    <SelectItem
-                      key={getProfessionalId(professional)}
-                      value={getProfessionalId(professional)}
-                    >
-                      {professional.workerName} · {professional.workerEmail}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="">Select a professional</option>
+                {assignableProfessionals.map((professional) => (
+                  <option
+                    key={getProfessionalId(professional)}
+                    value={getProfessionalId(professional)}
+                  >
+                    {professional.workerName} · {professional.workerEmail}
+                  </option>
+                ))}
+              </select>
 
               {assignableProfessionals.length === 0 && (
                 <p className="text-sm text-amber-700">

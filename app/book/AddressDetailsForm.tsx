@@ -6,7 +6,7 @@ import { MultiStepFormProps } from "@/app/book/page";
 import { useFormContext } from "react-hook-form";
 import { BookingFormData } from "@/app/book/schema/formSchema";
 import { cn } from "@/lib/utils";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const DUBLIN_AREAS = [
   "Dublin 1 - City Centre North",
@@ -100,7 +100,39 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
   const addressValue = watch("address");
   const [addressQuery, setAddressQuery] = useState(addressValue ?? "");
   const [isAddressFocused, setIsAddressFocused] = useState(false);
+  const [remoteAddressSuggestions, setRemoteAddressSuggestions] = useState<
+    string[]
+  >([]);
   const recognizedEircodeArea = getDublinAreaFromEircode(addressQuery);
+
+  useEffect(() => {
+    const query = addressQuery.trim();
+
+    if (query.length < 3 || recognizedEircodeArea) return;
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/address-suggestions?q=${encodeURIComponent(query)}`,
+          { signal: controller.signal },
+        );
+        const payload = await response.json().catch(() => null);
+        setRemoteAddressSuggestions(
+          Array.isArray(payload?.suggestions) ? payload.suggestions : [],
+        );
+      } catch (error) {
+        if ((error as DOMException).name !== "AbortError") {
+          setRemoteAddressSuggestions([]);
+        }
+      }
+    }, 220);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [addressQuery, recognizedEircodeArea]);
 
   const addressSuggestions = useMemo(() => {
     const query = addressQuery.trim().toLowerCase();
@@ -111,12 +143,21 @@ const AddressDetailsForm = ({ onNext, onBack }: MultiStepFormProps) => {
       ? [`${addressQuery.toUpperCase()} - recognized as ${eircodeArea}`]
       : [];
 
-    const matches = [...SAMPLE_DUBLIN_ADDRESSES, ...DUBLIN_AREAS]
+    const localMatches = [...SAMPLE_DUBLIN_ADDRESSES, ...DUBLIN_AREAS]
       .filter((item) => item.toLowerCase().includes(query))
       .slice(0, 6);
 
-    return [...eircodeSuggestion, ...matches].slice(0, 7);
-  }, [addressQuery]);
+    const effectiveRemoteSuggestions =
+      query.length >= 3 && !eircodeArea ? remoteAddressSuggestions : [];
+
+    return Array.from(
+      new Set([
+        ...eircodeSuggestion,
+        ...effectiveRemoteSuggestions,
+        ...localMatches,
+      ]),
+    ).slice(0, 9);
+  }, [addressQuery, remoteAddressSuggestions]);
 
   const selectAddressSuggestion = (suggestion: string) => {
     const value = suggestion.includes(" - recognized as ")
