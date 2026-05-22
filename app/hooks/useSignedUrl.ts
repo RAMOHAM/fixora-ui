@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react"
-import { supabase } from "@/app/api/supabaseApi";
 
 type Options = {
     bucket: string
@@ -10,6 +9,7 @@ type Options = {
 export const useSignedVideoUrl =
     ({bucket, path, expiresIn = 60 * 60,}: Options) => {
     const [url, setUrl] = useState<string | null>(null)
+    const [urlPath, setUrlPath] = useState<string | null>(null)
     const [expiresAt, setExpiresAt] = useState<number | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -20,31 +20,40 @@ export const useSignedVideoUrl =
         const now = Date.now()
 
         // use cached URL if still valid
-        if (url && expiresAt && now < expiresAt) {
+        if (url && urlPath === path && expiresAt && now < expiresAt) {
             return url
         }
 
         setLoading(true)
         setError(null)
 
-        const { data, error } = await supabase.storage
-            .from(bucket)
-            .createSignedUrl(path, expiresIn)
+        const response = await fetch("/api/video-upload/signed-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bucket, path, expiresIn }),
+        })
 
-        if (error) {
-            setError(error.message)
+        const payload = await response.json().catch(() => null)
+
+        if (!response.ok) {
+            const message =
+                typeof payload?.message === "string"
+                    ? payload.message
+                    : "Could not load video."
+            setError(message)
             setLoading(false)
-            return null
+            throw new Error(message)
         }
 
-        const signedUrl = data?.signedUrl || null
+        const signedUrl = payload?.signedUrl || null
 
         setUrl(signedUrl)
+        setUrlPath(path)
         setExpiresAt(now + expiresIn * 1000)
         setLoading(false)
 
         return signedUrl
-    }, [bucket, path, expiresIn, url, expiresAt])
+    }, [bucket, path, expiresIn, url, urlPath, expiresAt])
 
     return {
         url,

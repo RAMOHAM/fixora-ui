@@ -64,18 +64,18 @@ export default function ConfirmBookingModal({
     );
   }, [booking, professionals]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    setProfessionalId(
-      booking?.professionalId ?? booking?.assignedProfessionalId ?? "",
-    );
-    setAdminNotes("");
-  }, [
-    isOpen,
-    currentBookingId,
-    booking?.professionalId,
-    booking?.assignedProfessionalId,
-  ]);
+    useEffect(() => {
+        if (!isOpen) return;
+        setProfessionalId(
+            booking?.professionalId ?? booking?.assignedProfessionalId ?? "",
+        );
+        setAdminNotes("");
+    }, [
+        isOpen,
+        currentBookingId,
+        booking?.professionalId,
+        booking?.assignedProfessionalId,
+    ]);
 
   if (!booking) return null;
 
@@ -220,23 +220,21 @@ export default function ConfirmBookingModal({
 
             <div className="space-y-2">
               <Label htmlFor="professionalId">Professional</Label>
-
-              <select
-                id="professionalId"
-                value={professionalId}
-                onChange={(event) => setProfessionalId(event.target.value)}
-                className="h-11 w-full rounded-lg border border-input bg-white px-3 text-sm font-medium shadow-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
-              >
-                <option value="">Select a professional</option>
-                {assignableProfessionals.map((professional) => (
-                  <option
-                    key={getProfessionalId(professional)}
-                    value={getProfessionalId(professional)}
-                  >
-                    {professional.workerName} · {professional.workerEmail}
-                  </option>
-                ))}
-              </select>
+                <select
+                    value={professionalId}
+                    onChange={(e) =>
+                    {
+                        setProfessionalId(e.target.value)}
+                    }
+                    className="h-11 w-full rounded-lg border border-input bg-white px-3 text-sm font-medium shadow-sm outline-none"
+                >
+                    <option value="">Select a professional</option>
+                    {assignableProfessionals.map((professional) => (
+                        <option key={getProfessionalId(professional)} value={getProfessionalId(professional)}>
+                            {professional.workerName} · {professional.workerEmail}
+                        </option>
+                    ))}
+                </select>
 
               {assignableProfessionals.length === 0 && (
                 <p className="text-sm text-amber-700">

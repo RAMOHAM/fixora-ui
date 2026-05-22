@@ -22,13 +22,13 @@ interface BookingDetailsModalProps {
 
 export default function BookingDetailsModal({ booking, isOpen, onClose }: BookingDetailsModalProps) {
 
-    const { url, load, loading } = useSignedVideoUrl({
+    const { url, load, loading, error } = useSignedVideoUrl({
         bucket: "fixora-video-uploads",
         path: booking?.videoInput || null,
     })
     useEffect(() => {
         if (isOpen && booking?.videoInput) {
-            load()
+            load().catch((error) => console.error("Error loading video:", error))
         }
     }, [isOpen, booking?.videoInput, load])
 
@@ -68,6 +68,9 @@ export default function BookingDetailsModal({ booking, isOpen, onClose }: Bookin
                                     <Label>Introduction Video</Label>
                                     <div className="aspect-video w-full overflow-hidden rounded-md border bg-muted flex items-center justify-center">
                                         {loading && <p>Loading video...</p>}
+                                        {!loading && error && (
+                                            <p className="px-4 text-center text-sm text-destructive">{error}</p>
+                                        )}
                                         {url && (
                                             <video
                                                 className="w-full h-full object-cover"
