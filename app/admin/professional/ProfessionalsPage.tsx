@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { getProfessionalId, Professional } from "@/app/admin/types";
+import { toast } from "sonner";
 
 const AddProfessionalFormModal = dynamic(
   () => import("@/app/admin/professional/AddProfessionalFormModal"),
@@ -110,6 +111,38 @@ export default function ProfessionalsPage() {
     setPage(1);
   };
 
+  const deleteProfessional = async (professional: Professional) => {
+    const professionalId = getProfessionalId(professional);
+    if (!professionalId) {
+      toast.error("This professional cannot be deleted yet.");
+      return;
+    }
+
+    if (!window.confirm(`Delete ${professional.workerName}?`)) return;
+
+    try {
+      const res = await fetch(`/api/professionals/${professionalId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          professionalId
+        }),
+      });
+
+      if (!res.ok) {
+        toast.error("Could not delete professional.");
+        return;
+      }
+
+      setProfessionalsList((current) =>
+        current.filter((item) => getProfessionalId(item) !== professionalId),
+      );
+      toast.success("Professional deleted.");
+    } catch {
+      toast.error("Something went wrong while deleting the professional.");
+    }
+  };
+
   return (
     <div className="bg-gray-50">
       {/*Add Professional Modal */}
@@ -152,6 +185,7 @@ export default function ProfessionalsPage() {
           isLoading={loading}
           onView={openViewModal}
           onEdit={openEditModal}
+          onDelete={deleteProfessional}
         />
         {!loading && professionalsList.length > PROFESSIONALS_PER_PAGE && (
           <div className="flex flex-col gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">

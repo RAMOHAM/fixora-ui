@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { ProfessionalAvatar } from "./ProfessionalAvatar";
 import { Professional } from "@/app/admin/types";
 
@@ -9,10 +9,12 @@ export function ProfessionalCard({
     professional,
     onView,
     onEdit,
+    onDelete,
 } : {
     professional: Professional;
     onView: () => void;
     onEdit: () => void;
+    onDelete: () => void;
 }) {
     const actionLabel = "View Profile";
 
@@ -43,6 +45,15 @@ export function ProfessionalCard({
                     onClick={onEdit}
                 >
                     <Pencil className="w-3.5 h-3.5 text-gray-500" />
+                </Button>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl border-rose-100 text-rose-600 hover:bg-rose-50 shrink-0"
+                    aria-label={`Delete ${professional.workerName}`}
+                    onClick={onDelete}
+                >
+                    <Trash2 className="w-3.5 h-3.5" />
                 </Button>
             </div>
         </div>

@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   RefreshCw,
   Search,
+  Trash2,
   UserCheck,
   XCircle,
 } from "lucide-react";
@@ -19,7 +20,14 @@ import { toast } from "sonner";
 
 import BookingDetailsModal from "@/app/admin/BookingDetailsModal";
 import ConfirmBookingModal from "@/app/admin/ConfirmBookingModal";
-import { BookingRow, BookingStatus, getBookingId, getProfessionalId, Professional } from "@/app/admin/types";
+import {
+  BookingRow,
+  BookingStatus,
+  getBookingId,
+  getBookingProfessionalId,
+  getProfessionalId,
+  Professional,
+} from "@/app/admin/types";
 import { getBookingCategoryMeta } from "@/app/shared/categoryConfig";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -151,6 +159,7 @@ function RowActionsMenu({
   onConfirm,
   onViewDetails,
   onCancel,
+  onDelete,
 }: {
   bookingKey: string;
   status: string;
@@ -159,6 +168,7 @@ function RowActionsMenu({
   onConfirm: () => void;
   onViewDetails: () => void;
   onCancel: () => void;
+  onDelete: () => void;
 }) {
   const open = openId === bookingKey;
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -210,6 +220,7 @@ function RowActionsMenu({
     ...(status !== "CANCELLED" && status !== "COMPLETED"
       ? [{ id: "cancel", label: "Cancel Booking", icon: XCircle, onClick: onCancel }]
       : []),
+    { id: "delete", label: "Delete Booking", icon: Trash2, onClick: onDelete },
   ];
 
   return (
@@ -246,6 +257,7 @@ function RowActionsMenu({
                       "flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium text-slate-800",
                       "hover:bg-slate-50 focus:bg-slate-50 focus:outline-none",
                       item.id === "cancel" && "text-rose-700",
+                      item.id === "delete" && "text-rose-700",
                       idx !== 0 && "border-t border-black/5",
                     )}
                     onClick={() => {
@@ -285,21 +297,24 @@ function BookingServiceCell({ booking }: { booking: BookingRow }) {
 
 function BookingCard({
   booking,
+  professionalName,
   openMenuId,
   setOpenMenuId,
   onConfirm,
   onViewDetails,
   onCancel,
+  onDelete,
 }: {
   booking: BookingRow;
+  professionalName: string;
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
   onConfirm: () => void;
   onViewDetails: () => void;
   onCancel: () => void;
+  onDelete: () => void;
 }) {
   const bookingKey = getBookingId(booking) || `${booking.category}-${booking.dateOfJob}`;
-  const professionalName = booking.professionalName ?? "Unassigned";
 
   return (
     <div className="rounded-lg border border-black/5 bg-white p-4 shadow-sm">
@@ -313,6 +328,7 @@ function BookingCard({
           onConfirm={onConfirm}
           onViewDetails={onViewDetails}
           onCancel={onCancel}
+          onDelete={onDelete}
         />
       </div>
       <div className="mt-4 grid gap-3">
@@ -453,6 +469,26 @@ export default function BookingsPage() {
     : filteredBookings.slice((page - 1) * pageSize, page * pageSize);
   const totalBookings = serverTotal ?? filteredBookings.length;
   const topProfessionals = professionals.slice(0, 5);
+  const professionalsById = useMemo(() => {
+    const map = new Map<string, Professional>();
+    professionals.forEach((professional) => {
+      const id = getProfessionalId(professional);
+      if (id) map.set(id, professional);
+    });
+    return map;
+  }, [professionals]);
+
+  const getAssignedProfessionalName = useCallback(
+    (booking: BookingRow) => {
+      if (booking.professionalName) return booking.professionalName;
+
+      const professionalId = getBookingProfessionalId(booking);
+      if (!professionalId) return "Unassigned";
+
+      return professionalsById.get(professionalId)?.workerName ?? professionalId;
+    },
+    [professionalsById],
+  );
 
   const upsertBooking = (updatedBooking: BookingRow) => {
     const updatedId = getBookingId(updatedBooking);
@@ -490,6 +526,37 @@ export default function BookingsPage() {
       toast.success("Booking cancelled.");
     } catch {
       toast.error("Something went wrong while cancelling the booking.");
+    }
+  };
+
+  const deleteBooking = async (booking: BookingRow) => {
+    const bookingId = getBookingId(booking);
+    if (!bookingId) {
+      toast.error("This booking cannot be deleted yet.");
+      return;
+    }
+
+    if (!window.confirm("Delete this booking permanently?")) return;
+
+    try {
+      const res = await fetch(`/api/booking/${bookingId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId,
+        }),
+      });
+
+      if (!res.ok) {
+        toast.error("Could not delete booking.");
+        return;
+      }
+
+      setBookings((current) => current.filter((item) => getBookingId(item) !== bookingId));
+      setServerTotal((current) => (current === null ? current : Math.max(0, current - 1)));
+      toast.success("Booking deleted.");
+    } catch {
+      toast.error("Something went wrong while deleting the booking.");
     }
   };
 
@@ -565,7 +632,7 @@ export default function BookingsPage() {
             <tbody>
               {visibleBookings.map((booking) => {
                 const bookingKey = getBookingId(booking) || `${booking.category}-${booking.dateOfJob}`;
-                const professionalName = booking.professionalName ?? "Unassigned";
+                const professionalName = getAssignedProfessionalName(booking);
                 return (
                   <tr key={bookingKey} className="border-t border-black/5">
                     <td className="px-6 py-5">
@@ -590,6 +657,7 @@ export default function BookingsPage() {
                         onConfirm={() => setConfirmBooking(booking)}
                         onViewDetails={() => setSelectedBooking(booking)}
                         onCancel={() => cancelBooking(booking)}
+                        onDelete={() => deleteBooking(booking)}
                       />
                     </td>
                   </tr>
@@ -604,11 +672,13 @@ export default function BookingsPage() {
             <BookingCard
               key={getBookingId(booking) || `${booking.category}-${booking.dateOfJob}`}
               booking={booking}
+              professionalName={getAssignedProfessionalName(booking)}
               openMenuId={openMenuId}
               setOpenMenuId={setOpenMenuId}
               onConfirm={() => setConfirmBooking(booking)}
               onViewDetails={() => setSelectedBooking(booking)}
               onCancel={() => cancelBooking(booking)}
+              onDelete={() => deleteBooking(booking)}
             />
           ))}
         </div>

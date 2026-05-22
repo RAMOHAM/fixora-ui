@@ -6,11 +6,13 @@ export function ProfessionalsGridList({
   isLoading,
   onView,
   onEdit,
+  onDelete,
 }: {
   professionals: Professional[];
   isLoading?: boolean;
   onView: (professional: Professional) => void;
   onEdit: (professional: Professional) => void;
+  onDelete: (professional: Professional) => void;
 }) {
   if (isLoading) {
     return (
@@ -39,6 +41,7 @@ export function ProfessionalsGridList({
           professional={pro}
           onView={() => onView(pro)}
           onEdit={() => onEdit(pro)}
+          onDelete={() => onDelete(pro)}
         />
       ))}
     </div>

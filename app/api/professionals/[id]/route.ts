@@ -12,3 +12,19 @@ export async function PUT(
     body: JSON.stringify(body),
   });
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  const { id } = await context.params;
+  const body = await request.json().catch(() => ({}));
+
+  return backendFetch(`/api/professionals/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    body: JSON.stringify({
+      ...body,
+      professionalId: body?.professionalId ?? id,
+    }),
+  });
+}

@@ -35,6 +35,10 @@ export function getBookingId(booking: BookingRow) {
   return booking.id ?? booking._id ?? "";
 }
 
+export function getBookingProfessionalId(booking: BookingRow) {
+  return booking.professionalId ?? booking.assignedProfessionalId ?? "";
+}
+
 export function getProfessionalId(professional: Professional) {
   return professional.id ?? professional._id ?? "";
 }
