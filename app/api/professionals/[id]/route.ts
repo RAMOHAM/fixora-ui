@@ -14,17 +14,16 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  context: { params: Promise<{ id: string }> },
+    request: Request,
+    context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params;
-  const body = await request.json().catch(() => ({}));
+    const { id } = await context.params;
+    console.log("DELETE handler called with id:", id);
 
-  return backendFetch(`/api/professionals/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-    body: JSON.stringify({
-      ...body,
-      professionalId: body?.professionalId ?? id,
-    }),
-  });
+    const result = await backendFetch(`/api/professionals/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+    });
+
+    console.log("backendFetch result status:", result.status);
+    return result;
 }

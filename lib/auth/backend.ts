@@ -73,11 +73,16 @@ export async function backendFetch(path: string, init: BackendFetchOptions = {})
     return NextResponse.json(payload, { status: response.status });
   }
 
-  const text = await response.text();
-  return new NextResponse(text, {
-    status: response.status,
-    headers: contentType ? { "Content-Type": contentType } : undefined,
-  });
+    const text = await response.text();
+
+    if (!text) {
+        return new NextResponse(null, { status: response.status });
+    }
+
+    return new NextResponse(text, {
+        status: response.status,
+        headers: contentType ? { "Content-Type": contentType } : undefined,
+    });
 }
 
 export async function authenticateWithBackend(body: unknown) {

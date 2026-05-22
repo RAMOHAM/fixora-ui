@@ -124,14 +124,11 @@ export default function ProfessionalsPage() {
       const res = await fetch(`/api/professionals/${professionalId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          professionalId
-        }),
       });
 
       if (!res.ok) {
-        toast.error("Could not delete professional.");
-        return;
+          toast.error("Could not delete professional.");
+          return;
       }
 
       setProfessionalsList((current) =>
