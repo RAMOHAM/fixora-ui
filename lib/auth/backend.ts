@@ -68,21 +68,24 @@ export async function backendFetch(path: string, init: BackendFetchOptions = {})
   });
 
   const contentType = response.headers.get("content-type");
-  if (contentType?.includes("application/json")) {
-    const payload = await response.json();
-    return NextResponse.json(payload, { status: response.status });
-  }
+  const text = await response.text();
 
-    const text = await response.text();
-
-    if (!text) {
-        return new NextResponse(null, { status: response.status });
+  if (!text) {
+    if (response.status === 204 || response.status === 205) {
+      return NextResponse.json({ ok: true }, { status: 200 });
     }
 
-    return new NextResponse(text, {
-        status: response.status,
-        headers: contentType ? { "Content-Type": contentType } : undefined,
-    });
+    return new NextResponse(null, { status: response.status });
+  }
+
+  if (contentType?.includes("application/json")) {
+    return NextResponse.json(JSON.parse(text), { status: response.status });
+  }
+
+  return new NextResponse(text, {
+    status: response.status,
+    headers: contentType ? { "Content-Type": contentType } : undefined,
+  });
 }
 
 export async function authenticateWithBackend(body: unknown) {
