@@ -84,6 +84,7 @@ export default function ConfirmBookingModal({
   const CategoryIcon = categoryMeta.icon;
 
   const confirmBooking = async () => {
+      console.log("Confirming booking with ID:", bookingId);
     if (!bookingId) {
       toast.error(
         "This booking is missing an id, so it cannot be confirmed yet.",
@@ -96,13 +97,14 @@ export default function ConfirmBookingModal({
     }
 
     setIsSubmitting(true);
+    console.log("Confirming booking with ID:", bookingId);
+    console.log("Professional ID:", professionalId);
     try {
-      const res = await fetch(`/api/booking/${bookingId}/confirm`, {
+      const params = new URLSearchParams({ professionalId });
+      const res = await fetch(`/api/booking/${bookingId}/confirm?${params}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          professionalId,
-          bookingStatus: "SCHEDULED",
           adminNotes: adminNotes.trim() || undefined,
         }),
       });
