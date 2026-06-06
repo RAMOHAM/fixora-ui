@@ -1,8 +1,12 @@
-export type BookingStatus = "PENDING" | "SCHEDULED" | "COMPLETED" | "CANCELLED";
+export type BookingStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export type BookingRow = {
-  id?: string;
-  _id?: string;
+  id?: string | number;
+  _id?: string | number;
   category: string;
   dateOfJob: string;
   preferredWindow?: "morning" | "afternoon" | "evening" | string;
@@ -10,8 +14,8 @@ export type BookingRow = {
   jobDescription: string;
   address?: string;
   videoInput?: string;
-  professionalId?: string;
-  assignedProfessionalId?: string;
+  professionalId?: string | number;
+  assignedProfessionalId?: string | number;
   professionalName?: string;
   customerName?: string;
   email?: string;
@@ -20,8 +24,8 @@ export type BookingRow = {
 };
 
 export type Professional = {
-  id: string;
-  _id?: string;
+  id: string | number;
+  _id?: string | number;
   workerName: string;
   workerEmail: string;
   category: string;
@@ -32,13 +36,16 @@ export type Professional = {
 };
 
 export function getBookingId(booking: BookingRow) {
-  return booking.id ?? booking._id ?? "";
+  const id = booking.id ?? booking._id;
+  return id == null ? "" : String(id);
 }
 
 export function getBookingProfessionalId(booking: BookingRow) {
-  return booking.professionalId ?? booking.assignedProfessionalId ?? "";
+  const id = booking.professionalId ?? booking.assignedProfessionalId;
+  return id == null ? "" : String(id);
 }
 
 export function getProfessionalId(professional: Professional) {
-  return professional.id ?? professional._id ?? "";
+  const id = professional.id ?? professional._id;
+  return id == null ? "" : String(id);
 }

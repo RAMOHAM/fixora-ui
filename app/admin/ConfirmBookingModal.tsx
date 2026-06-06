@@ -84,7 +84,6 @@ export default function ConfirmBookingModal({
   const CategoryIcon = categoryMeta.icon;
 
   const confirmBooking = async () => {
-      console.log("Confirming booking with ID:", bookingId);
     if (!bookingId) {
       toast.error(
         "This booking is missing an id, so it cannot be confirmed yet.",
@@ -97,8 +96,6 @@ export default function ConfirmBookingModal({
     }
 
     setIsSubmitting(true);
-    console.log("Confirming booking with ID:", bookingId);
-    console.log("Professional ID:", professionalId);
     try {
       const params = new URLSearchParams({ professionalId });
       const res = await fetch(`/api/booking/${bookingId}/confirm?${params}`, {
@@ -135,16 +132,23 @@ export default function ConfirmBookingModal({
         (professional) => getProfessionalId(professional) === professionalId,
       );
 
-      onConfirmed(
-        updatedBooking ?? {
-          ...booking,
-          bookingStatus: "SCHEDULED",
+      onConfirmed({
+        ...booking,
+        ...updatedBooking,
+        bookingStatus: updatedBooking?.bookingStatus ?? "CONFIRMED",
+        professionalId:
+          updatedBooking?.professionalId ??
+          updatedBooking?.assignedProfessionalId ??
           professionalId,
-          assignedProfessionalId: professionalId,
-          professionalName:
-            selectedProfessional?.workerName ?? booking.professionalName,
-        },
-      );
+        assignedProfessionalId:
+          updatedBooking?.assignedProfessionalId ??
+          updatedBooking?.professionalId ??
+          professionalId,
+        professionalName:
+          updatedBooking?.professionalName ??
+          selectedProfessional?.workerName ??
+          booking.professionalName,
+      });
       toast.success("Booking confirmed and assigned.");
       onClose();
     } catch {

@@ -58,7 +58,7 @@ type ProfessionalsApiResponse =
 const STATUS_FILTERS: Array<{ id: BookingFilter; label: string }> = [
   { id: "ALL", label: "All" },
   { id: "PENDING", label: "Pending" },
-  { id: "SCHEDULED", label: "Scheduled" },
+  { id: "CONFIRMED", label: "Confirmed" },
   { id: "COMPLETED", label: "Completed" },
   { id: "CANCELLED", label: "Cancelled" },
 ];
@@ -68,7 +68,7 @@ const BOOKING_STATUS_META: Record<
   { label: string; cls: string; icon: LucideIcon }
 > = {
   PENDING: { label: "Pending", cls: "bg-indigo-100 text-indigo-700", icon: BriefcaseBusiness },
-  SCHEDULED: { label: "Scheduled", cls: "bg-slate-100 text-slate-700", icon: UserCheck },
+  CONFIRMED: { label: "Confirmed", cls: "bg-emerald-100 text-emerald-700", icon: UserCheck },
   COMPLETED: { label: "Completed", cls: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
   CANCELLED: { label: "Cancelled", cls: "bg-rose-100 text-rose-700", icon: XCircle },
 };
@@ -481,7 +481,7 @@ export default function BookingsPage() {
   const getAssignedProfessionalName = useCallback(
     (booking: BookingRow) => {
       if (booking.professionalName) return booking.professionalName;
-
+      console.log("booking", booking);
       const professionalId = getBookingProfessionalId(booking);
       if (!professionalId) return "Unassigned";
 
